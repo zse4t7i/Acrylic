@@ -46,15 +46,16 @@ ComPtr<ID3D12Device9> Device{};
 ComPtr<D3D12MA::Allocator> MemAllocator{};
 ComPtr<ID3D12CommandQueue> CmdQueue{};
 ComPtr<ID3D12GraphicsCommandList6> CmdList{};
-ComPtr<ID3D12CommandAllocator> CmdAllocator{};
+std::array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT>
+    FrameCAs{};
 
 ComPtr<ID3D12Fence1> Fence{};
-std::uint64_t FenceValue{1};
 HANDLE FenceEvent{};
+std::array<std::uint64_t, Acrylic::D3D12::FRAMECOUNT> FrameFVs{};
 std::uint32_t FrameIndex{0};
 ComPtr<IDXGISwapChain4> SwapChain{};
 
-std::array<ComPtr<ID3D12Resource>, Acrylic::D3D12::FRAMECOUNT> ResRTs{};
+std::array<ComPtr<ID3D12Resource>, Acrylic::D3D12::FRAMECOUNT> FrameRTs{};
 ComPtr<ID3D12DescriptorHeap> HeapRTV{};
 std::uint32_t OffsetRTV{0};
 
@@ -70,21 +71,35 @@ ComPtr<D3D12MA::Allocation> AllocCB{};
 ConstantBuffer CBData{};
 void* pCBMemBegin{};
 
-void waitForPreviousFrame()
+void waitForGPU()
 {
-    const std::uint64_t currentFenceValue = FenceValue++;
-
-    hr = CmdQueue->Signal(Fence.Get(), currentFenceValue);
+    hr = CmdQueue->Signal(Fence.Get(), FrameFVs[FrameIndex]);
     assert(SUCCEEDED(hr) && "Failed to signal command queue.");
 
-    if (Fence->GetCompletedValue() < currentFenceValue)
-    {
-        hr = Fence->SetEventOnCompletion(currentFenceValue, FenceEvent);
-        assert(SUCCEEDED(hr) && "Failed to set event on completion.");
-        WaitForSingleObject(FenceEvent, INFINITE);
-    }
+    hr = Fence->SetEventOnCompletion(FrameFVs[FrameIndex], FenceEvent);
+    assert(SUCCEEDED(hr) && "Failed to set event on completion.");
+    WaitForSingleObjectEx(FenceEvent, INFINITE, false);
 
     FrameIndex = SwapChain->GetCurrentBackBufferIndex();
+}
+
+void moveToNextFrame()
+{
+    const auto currentFV = FrameFVs[FrameIndex];
+
+    hr = CmdQueue->Signal(Fence.Get(), currentFV);
+    assert(SUCCEEDED(hr) && "Failed to signal command queue.");
+
+    FrameIndex = SwapChain->GetCurrentBackBufferIndex();
+
+    if (Fence->GetCompletedValue() < FrameFVs[FrameIndex])
+    {
+        hr = Fence->SetEventOnCompletion(FrameFVs[FrameIndex], FenceEvent);
+        assert(SUCCEEDED(hr) && "Failed to set event on completion.");
+        WaitForSingleObjectEx(FenceEvent, INFINITE, false);
+    }
+
+    FrameFVs[FrameIndex] = currentFV + 1;
 }
 
 void initGraphicsPipeline()
@@ -184,19 +199,19 @@ void initGraphicsPipeline()
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE HandleRTV{
         HeapRTV->GetCPUDescriptorHandleForHeapStart()};
-    for (std::uint32_t i = 0; i < Acrylic::D3D12::FRAMECOUNT; ++i)
+    for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; ++i)
     {
-        hr = SwapChain->GetBuffer(i, IID_PPV_ARGS(ResRTs[i].GetAddressOf()));
+        hr = SwapChain->GetBuffer(i, IID_PPV_ARGS(FrameRTs[i].GetAddressOf()));
         assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
 
-        Device->CreateRenderTargetView(ResRTs[i].Get(), nullptr, HandleRTV);
+        Device->CreateRenderTargetView(FrameRTs[i].Get(), nullptr, HandleRTV);
         HandleRTV.Offset(1, OffsetRTV);
-    }
 
-    hr = Device->CreateCommandAllocator(
-        D3D12_COMMAND_LIST_TYPE_DIRECT,
-        IID_PPV_ARGS(CmdAllocator.GetAddressOf()));
-    assert(SUCCEEDED(hr) && "Failed to create command allocator.");
+        hr = Device->CreateCommandAllocator(
+            D3D12_COMMAND_LIST_TYPE_DIRECT,
+            IID_PPV_ARGS(FrameCAs[i].GetAddressOf()));
+        assert(SUCCEEDED(hr) && "Failed to create command allocator.");
+    }
 
     hr = Device->CreateCommandList1(0,
                                     D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -204,7 +219,7 @@ void initGraphicsPipeline()
                                     IID_PPV_ARGS(CmdList.GetAddressOf()));
     assert(SUCCEEDED(hr) && "Failed to create command list.");
 
-    hr = Device->CreateFence(0,
+    hr = Device->CreateFence(FrameFVs[FrameIndex]++,
                              D3D12_FENCE_FLAG_NONE,
                              IID_PPV_ARGS(Fence.GetAddressOf()));
     assert(SUCCEEDED(hr) && "Failed to create fence.");
@@ -403,10 +418,10 @@ void loadAsset()
 
 #pragma region Texture
     {
-        hr = CmdAllocator->Reset();
+        hr = FrameCAs[FrameIndex]->Reset();
         assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-        hr = CmdList->Reset(CmdAllocator.Get(), PSO.Get());
+        hr = CmdList->Reset(FrameCAs[FrameIndex].Get(), PSO.Get());
         assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
         D3D12MA::CALLOCATION_DESC descAllocDefault{
@@ -474,7 +489,7 @@ void loadAsset()
             D3D12_RESOURCE_STATE_COPY_DEST,
             D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
         CmdList->ResourceBarrier(1, &barrier);
-        
+
         CD3DX12_CPU_DESCRIPTOR_HANDLE handleSRV{
             HeapCSU->GetCPUDescriptorHandleForHeapStart(),
             1,
@@ -497,17 +512,17 @@ void loadAsset()
         CmdQueue->ExecuteCommandLists(
             static_cast<std::uint32_t>(cmdLists.size()),
             cmdLists.data());
-        waitForPreviousFrame();
+        waitForGPU();
     }
 #pragma endregion
 }
 
 void populateCmdList()
 {
-    hr = CmdAllocator->Reset();
+    hr = FrameCAs[FrameIndex]->Reset();
     assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-    hr = CmdList->Reset(CmdAllocator.Get(), PSO.Get());
+    hr = CmdList->Reset(FrameCAs[FrameIndex].Get(), PSO.Get());
     assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
     CmdList->SetGraphicsRootSignature(RS.Get());
@@ -529,7 +544,7 @@ void populateCmdList()
     CmdList->SetGraphicsRootDescriptorTable(1, HandleSRV);
 
     CD3DX12_RESOURCE_BARRIER p2r = CD3DX12_RESOURCE_BARRIER::Transition(
-        ResRTs[FrameIndex].Get(),
+        FrameRTs[FrameIndex].Get(),
         D3D12_RESOURCE_STATE_PRESENT,
         D3D12_RESOURCE_STATE_RENDER_TARGET);
     CmdList->ResourceBarrier(1, &p2r);
@@ -545,7 +560,7 @@ void populateCmdList()
     CmdList->DrawInstanced(3, 1, 0, 0);
 
     CD3DX12_RESOURCE_BARRIER r2p =
-        CD3DX12_RESOURCE_BARRIER::Transition(ResRTs[FrameIndex].Get(),
+        CD3DX12_RESOURCE_BARRIER::Transition(FrameRTs[FrameIndex].Get(),
                                              D3D12_RESOURCE_STATE_RENDER_TARGET,
                                              D3D12_RESOURCE_STATE_PRESENT);
     CmdList->ResourceBarrier(1, &r2p);
@@ -656,12 +671,12 @@ void Render()
     hr = SwapChain->Present(1, 0);
     assert(SUCCEEDED(hr) && "Failed to present swap chain frame.");
 
-    waitForPreviousFrame();
+    moveToNextFrame();
 }
 
 void Destroy()
 {
-    waitForPreviousFrame();
+    waitForGPU();
     CloseHandle(FenceEvent);
 }
 } // namespace Acrylic::D3D12

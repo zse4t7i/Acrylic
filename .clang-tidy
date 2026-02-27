@@ -19,6 +19,7 @@ Checks: '
   -cppcoreguidelines-avoid-non-const-global-variables,
   -modernize-use-designated-initializers,
   -readability-implicit-bool-conversion,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
   
 '
 
