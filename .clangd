@@ -1,0 +1,13 @@
+CompileFlags:
+  Remove: ['-Wc++17-extensions']
+
+Completion:
+  HeaderInsertion: Never
+
+InlayHints:
+  Enabled: Yes
+  BlockEnd: Yes
+  Designators: Yes
+  ParameterNames: Yes
+  DeducedTypes: No
+  DefaultArguments: No

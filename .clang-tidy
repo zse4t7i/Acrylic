@@ -1,0 +1,25 @@
+Checks: '
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  concurrency-*,
+  cppcoreguidelines-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*,
+
+  -bugprone-easily-swappable-parameters,
+  -*-magic-numbers,
+  -readability-identifier-length,
+  -misc-include-cleaner,
+  -portability-avoid-pragma-once,
+  -cppcoreguidelines-avoid-do-while,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -modernize-use-designated-initializers,
+  -readability-implicit-bool-conversion,
+  
+'
+
+WarningsAsErrors: '-*'
