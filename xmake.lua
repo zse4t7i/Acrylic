@@ -51,14 +51,14 @@ rule("ShaderCompile")
         -- Determine shader profile based on file name convention
         -- (e.g., file.vs.hlsl, file.ps.hlsl)
         local filename = path.filename(sourcefile)
-        local shaderProfile = "vs_6_8"
+        local shaderProfile = "vs_6_9"
         
         if filename:match("%.vs%.hlsl$") then
-            shaderProfile = "vs_6_8"
+            shaderProfile = "vs_6_9"
         elseif filename:match("%.ps%.hlsl$") then
-            shaderProfile = "ps_6_8"
+            shaderProfile = "ps_6_9"
         elseif filename:match("%.cs%.hlsl$") then
-            shaderProfile = "cs_6_8"
+            shaderProfile = "cs_6_9"
         end
 
         -- Output to bin/Shader
