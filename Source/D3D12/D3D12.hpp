@@ -10,12 +10,12 @@
 
 namespace Acrylic::D3D12
 {
-constexpr int FRAMECOUNT{2};
 constexpr int TEXELSIZE{4};
 constexpr int TEXTUREWIDTH{1024};
 constexpr int TEXTUREHEIGHT{1024};
 
 extern std::string GPUName;
+extern HANDLE EventSwapChain;
 
 // extern HWND HWnd;
 // extern std::uint16_t Width;
@@ -54,4 +54,4 @@ void Init(HINSTANCE hInst,
 void Update();
 void Render();
 void Destroy();
-} // namespace Suiko::Device
+} // namespace Acrylic::D3D12

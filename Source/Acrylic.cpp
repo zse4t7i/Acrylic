@@ -22,6 +22,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
     MSG _msg{};
     while (true)
     {
+        WaitForSingleObject(Acrylic::D3D12::EventSwapChain, 1000);
         if (PeekMessageW(&_msg, nullptr, 0, 0, PM_REMOVE))
         {
             if (_msg.message == WM_QUIT)
