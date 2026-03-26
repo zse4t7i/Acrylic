@@ -52,8 +52,7 @@ ID3D12CommandQueue* CmdQueue;
 ID3D12GraphicsCommandList6* CmdList;
 ID3D12CommandAllocator* CmdAllocator;
 
-    ComPtr<ID3D12RootSignature>
-        RS{};
+ComPtr<ID3D12RootSignature> RS{};
 ComPtr<ID3D12PipelineState> PSO{};
 
 ComPtr<ID3D12DescriptorHeap> HeapCSU{};
@@ -462,7 +461,5 @@ void Render()
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 
     Acrylic::D3D12::PresentSync();
-
-    Acrylic::FrameResource::MoveToNext();
 }
 } // namespace Acrylic::Scene

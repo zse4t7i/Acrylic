@@ -38,7 +38,7 @@ namespace Acrylic::FrameResource
 {
 void Init()
 {
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 2; i++)
     {
         hr = Acrylic::D3D12::GetDevice()->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,

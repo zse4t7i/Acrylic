@@ -13,6 +13,9 @@ HWND HWnd{};
 int Width{1920};
 int Height{1200};
 
+bool Resized{false};
+bool Minimized{false};
+
 //==============================================================================
 // Function
 //==============================================================================
@@ -72,14 +75,42 @@ void Init(HINSTANCE hInst,
 //==============================================================================
 // Accessors
 //==============================================================================
-auto GetHWnd() -> HWND{
+auto GetHWnd() -> HWND
+{
     return HWnd;
 }
-auto GetWidth() -> int{
+auto GetWidth() -> int
+{
     return Width;
 }
-auto GetHeight() -> int{
+auto GetHeight() -> int
+{
     return Height;
+}
+auto IsResized() -> bool
+{
+    return Resized;
+}
+auto IsMinimized() -> bool
+{
+    return Minimized;
+}
+
+void SetWidth(int width)
+{
+    Width = width;
+}
+void SetHeight(int height)
+{
+    Height = height;
+}
+void SetResized(bool resized)
+{
+    Resized = resized;
+}
+void SetMinimized(bool minimized)
+{
+    Minimized = minimized;
 }
 
 } // namespace Acrylic::Window

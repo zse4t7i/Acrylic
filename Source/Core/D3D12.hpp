@@ -6,7 +6,9 @@
 namespace Acrylic::D3D12
 {
 void Init();
+// Waits for the SwapChain to be ready for the next frame.
 void WaitForSwapChain();
+void Resize();
 // Present w/ V-Sync.
 void PresentSync();
 // Present w/o V-Sync.

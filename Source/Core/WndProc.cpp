@@ -1,3 +1,5 @@
+#include "Window.hpp"
+
 #include <windows.h>
 
 namespace
@@ -22,8 +24,19 @@ auto CALLBACK WndProc(HWND hWnd,
     switch (uMsg)
     {
     case WM_DESTROY:
+    {
         PostQuitMessage(0);
         return 0;
+    }
+
+    case WM_SIZE:
+    {
+        Acrylic::Window::SetResized(true);
+        Acrylic::Window::SetMinimized(wParam == SIZE_MINIMIZED);
+        Acrylic::Window::SetWidth(LOWORD(lParam));
+        Acrylic::Window::SetHeight(HIWORD(lParam));
+        return 0;
+    }
 
     default:
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);

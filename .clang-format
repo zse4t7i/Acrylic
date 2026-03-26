@@ -14,5 +14,6 @@ BinPackParameters: AlwaysOnePerLine
 AlignOperands: AlignAfterOperator
 BreakBeforeBinaryOperators: NonAssignment
 BreakBinaryOperations: RespectPrecedence
-PointerAlignment: Left 
+PointerAlignment: Left
+BreakBeforeBraces: Allman
 # <| Half-screen configuration

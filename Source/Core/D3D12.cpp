@@ -1,4 +1,5 @@
 #include "D3D12.hpp"
+#include "FrameResource.hpp"
 #include "Log.hpp"
 #include "Util.hpp"
 #include "Window.hpp"
@@ -116,7 +117,8 @@ void InitGraphicsPipeline()
         descD3D12MA.pDevice  = Device.Get();
         descD3D12MA.pAdapter = adapter.Get();
 
-        hr = D3D12MA::CreateAllocator(&descD3D12MA, MemAllocator.GetAddressOf());
+        hr =
+            D3D12MA::CreateAllocator(&descD3D12MA, MemAllocator.GetAddressOf());
         assert(SUCCEEDED(hr) && "Failed to create D3D12 Memory Allocator.");
     }
 #pragma endregion
@@ -183,13 +185,13 @@ void InitGraphicsPipeline()
         hr = Device->CreateDescriptorHeap(&descHeapRTV,
                                           IID_PPV_ARGS(HeapRTV.GetAddressOf()));
         assert(SUCCEEDED(hr) && "Failed to create RTV descriptor heap.");
-        
+
         OffsetRTV = Device->GetDescriptorHandleIncrementSize(
             D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE handleRTV{
             HeapRTV->GetCPUDescriptorHandleForHeapStart()};
-        for (int i = 0; i < BUFFERCOUNT; ++i)
+        for (int i = 0; i < BUFFERCOUNT; i++)
         {
             hr = SwapChain->GetBuffer(i, IID_PPV_ARGS(RTs[i].GetAddressOf()));
             assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
@@ -216,6 +218,40 @@ void Init()
 void WaitForSwapChain()
 {
     WaitForSingleObject(EventSwapChain, 1000);
+}
+
+void Resize()
+{
+    // Acrylic::FrameResource::WaitForGPU();
+
+    // Release the resources holding references to the swap chain (requirement
+    // of IDXGISwapChain::ResizeBuffers)
+    for (int i = 0; i < BUFFERCOUNT; i++)
+    {
+        RTs[i].Reset();
+    }
+
+    // Resize SwapChain buffers.
+    DXGI_SWAP_CHAIN_DESC1 desc{};
+    SwapChain->GetDesc1(&desc);
+    hr = SwapChain->ResizeBuffers(BUFFERCOUNT,
+                                  Acrylic::Window::GetWidth(),
+                                  Acrylic::Window::GetHeight(),
+                                  desc.Format,
+                                  desc.Flags);
+    assert(SUCCEEDED(hr) && "Failed to resize SwapChain buffers.");
+
+    // Recreate RTVs for the new buffers.
+    CD3DX12_CPU_DESCRIPTOR_HANDLE handleRTV{
+        HeapRTV->GetCPUDescriptorHandleForHeapStart()};
+    for (int i = 0; i < BUFFERCOUNT; i++)
+    {
+        hr = SwapChain->GetBuffer(i, IID_PPV_ARGS(RTs[i].GetAddressOf()));
+        assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
+
+        Device->CreateRenderTargetView(RTs[i].Get(), nullptr, handleRTV);
+        handleRTV.Offset(1, OffsetRTV);
+    }
 }
 
 void PresentSync()

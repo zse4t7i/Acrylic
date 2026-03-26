@@ -24,14 +24,16 @@ auto WINAPI wWinMain(HINSTANCE hInst,
     Acrylic::FrameResource::Init();
     Acrylic::Scene::Init();
     LOG_INFO("Acrylic is ready!");
-    
+
     ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
-        
+
     // Message loop.
     MSG msg{};
     while (true)
     {
         Acrylic::D3D12::WaitForSwapChain();
+        Acrylic::FrameResource::MoveToNext();
+
         if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
@@ -40,6 +42,12 @@ auto WINAPI wWinMain(HINSTANCE hInst,
             }
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
+        }
+
+        if (Acrylic::Window::IsResized() && !Acrylic::Window::IsMinimized())
+        {
+            Acrylic::Window::SetResized(false);
+            Acrylic::D3D12::Resize();
         }
 
         Acrylic::Scene::Update();
