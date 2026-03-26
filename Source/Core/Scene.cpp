@@ -50,7 +50,6 @@ ID3D12Device9* Device;
 D3D12MA::Allocator* MemAllocator;
 ID3D12CommandQueue* CmdQueue;
 ID3D12GraphicsCommandList6* CmdList;
-ID3D12CommandAllocator* CmdAllocator;
 
 ComPtr<ID3D12RootSignature> RS{};
 ComPtr<ID3D12PipelineState> PSO{};
@@ -253,10 +252,10 @@ void CreateCB()
 
 void CreateSR()
 {
-    hr = CmdAllocator->Reset();
+    hr = Acrylic::FrameResource::GetCurrentCA()->Reset();
     assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-    hr = CmdList->Reset(CmdAllocator, PSO.Get());
+    hr = CmdList->Reset(Acrylic::FrameResource::GetCurrentCA(), PSO.Get());
     assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
     D3D12MA::CALLOCATION_DESC descAllocDefault{
@@ -363,10 +362,10 @@ void populateCmdList()
                              static_cast<long>(Acrylic::Window::GetWidth()),
                              static_cast<long>(Acrylic::Window::GetHeight())};
 
-    hr = CmdAllocator->Reset();
+    hr = Acrylic::FrameResource::GetCurrentCA()->Reset();
     assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-    hr = CmdList->Reset(CmdAllocator, PSO.Get());
+    hr = CmdList->Reset(Acrylic::FrameResource::GetCurrentCA(), PSO.Get());
     assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
     CmdList->SetGraphicsRootSignature(RS.Get());
@@ -418,7 +417,6 @@ void Init()
     MemAllocator = Acrylic::D3D12::GetMemAllocator();
     CmdQueue     = Acrylic::D3D12::GetCmdQueue();
     CmdList      = Acrylic::D3D12::GetCmdList();
-    CmdAllocator = Acrylic::FrameResource::GetCurrentCA();
 
     D3D12_DESCRIPTOR_HEAP_DESC heapDescCSU{};
     heapDescCSU.NumDescriptors = 2;
@@ -461,5 +459,6 @@ void Render()
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 
     Acrylic::D3D12::PresentSync();
+    //Acrylic::D3D12::PresentTear();
 }
 } // namespace Acrylic::Scene
