@@ -23,4 +23,6 @@ extern quill::Logger* MainLogger;
 
 void Init(const std::filesystem::path& path);
 
+void Flush();
+
 } // namespace Acrylic::Log

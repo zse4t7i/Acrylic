@@ -46,4 +46,8 @@ void Init(const std::filesystem::path& logFilePath)
     MainLogger->set_log_level(quill::LogLevel::TraceL3);
 }
 
+void Flush()
+{
+    MainLogger->flush_log();
+}
 } // namespace Acrylic::Log

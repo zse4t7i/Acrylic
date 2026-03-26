@@ -1,5 +1,10 @@
 #include "D3D12.hpp"
+#include "FrameResource.hpp"
 #include "Log.hpp"
+#include "Scene.hpp"
+#include "Window.hpp"
+
+#include <Windows.h>
 
 // Used to enable the "Agility SDK" components
 extern "C"
@@ -14,30 +19,32 @@ auto WINAPI wWinMain(HINSTANCE hInst,
                      int nShowCmd) -> int
 {
     Acrylic::Log::Init(LR"(Log\Acrylic.log)");
+    Acrylic::Window::Init(hInst, nShowCmd);
+    Acrylic::D3D12::Init();
+    Acrylic::FrameResource::Init();
+    Acrylic::Scene::Init();
     LOG_INFO("Acrylic is ready!");
-
-    Acrylic::D3D12::Init(hInst, nShowCmd);
-
+    
+    ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
+        
     // Message loop.
-    MSG _msg{};
+    MSG msg{};
     while (true)
     {
-        WaitForSingleObject(Acrylic::D3D12::EventSwapChain, 1000);
-        if (PeekMessageW(&_msg, nullptr, 0, 0, PM_REMOVE))
+        Acrylic::D3D12::WaitForSwapChain();
+        if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
-            if (_msg.message == WM_QUIT)
+            if (msg.message == WM_QUIT)
             {
                 break;
             }
-            TranslateMessage(&_msg);
-            DispatchMessageW(&_msg);
+            TranslateMessage(&msg);
+            DispatchMessageW(&msg);
         }
 
-        Acrylic::D3D12::Update();
-        Acrylic::D3D12::Render();
+        Acrylic::Scene::Update();
+        Acrylic::Scene::Render();
     }
 
-    Acrylic::D3D12::Destroy();
-
-    return static_cast<int>(_msg.wParam);
+    return static_cast<int>(msg.wParam);
 }

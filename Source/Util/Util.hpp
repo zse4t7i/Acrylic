@@ -1,16 +1,13 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #include <DirectXCollision.h>
 #include <DirectXColors.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
+#include <stb_image.h>
 
 #include <windows.h>
 
-#include <array>
 #include <cassert>
 #include <filesystem>
 #include <fstream>
@@ -97,20 +94,6 @@ inline auto UTF1628(std::wstring_view inU16,
     return convertedLength == u8Length;
 }
 
-struct Vertex
-{
-    DirectX::XMFLOAT3 Position{};
-    DirectX::XMFLOAT2 UV{};
-};
-
-struct ConstantBuffer
-{
-    DirectX::XMFLOAT4 Offset{};
-    std::array<float, 60> padding{};
-};
-static_assert((sizeof(ConstantBuffer) % 256) == 0,
-              "Constant Buffer size must be 256-byte aligned");
-
 inline auto LoadBinary(const std::filesystem::path& path,
                        std::vector<std::byte>& outData) -> bool
 {
@@ -152,5 +135,4 @@ inline auto LoadImage(const std::filesystem::path& path,
 
     return true;
 }
-
 } // namespace Acrylic::Util

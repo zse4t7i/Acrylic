@@ -6,12 +6,6 @@ set_xmakever("3.0.7")
 set_encodings("utf-8")
 set_languages("c++20")
 set_toolchains("msvc")
-set_defaultplat("windows")
-set_defaultarchs("x64")
-set_defaultmode("release")
-set_allowedplats("windows")
-set_allowedarchs("x64", "arm64")
-set_allowedmodes("release", "debug")
 
 add_rules("mode.debug", "mode.release")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = "build"})
@@ -36,7 +30,7 @@ add_defines("WIN32_LEAN_AND_MEAN")
 add_requires("benchmark", "quill", "nlohmann_json",
             "imgui[dx12,win32]",
             "assimp", "stb", "fastgltf",
-            "directx-headers", "directx12-agility", "d3d12-memory-allocator",
+            "directx12-agility", "d3d12-memory-allocator",
             "directxtk12", "directxtex", "directxmath")
 
 rule("AssetCopy")
@@ -51,14 +45,14 @@ rule("ShaderCompile")
         -- Determine shader profile based on file name convention
         -- (e.g., file.vs.hlsl, file.ps.hlsl)
         local filename = path.filename(sourcefile)
-        local shaderProfile = "vs_6_8"
+        local shaderProfile = "vs_6_9"
         
         if filename:match("%.vs%.hlsl$") then
-            shaderProfile = "vs_6_8"
+            shaderProfile = "vs_6_9"
         elseif filename:match("%.ps%.hlsl$") then
-            shaderProfile = "ps_6_8"
+            shaderProfile = "ps_6_9"
         elseif filename:match("%.cs%.hlsl$") then
-            shaderProfile = "cs_6_8"
+            shaderProfile = "cs_6_9"
         end
 
         -- Output to bin/Shader
@@ -108,18 +102,17 @@ target("Acrylic", function ()
     add_rules("ShaderCompile")
     
     add_cxflags("-arch:AVX2", "-fp:fast")
-    add_syslinks("user32", "d3d12", "dxgi")
+    add_syslinks("user32", "d3d12", "dxgi", "dxguid")
 
     add_files("Source/**.cpp")
     add_files("Shader/**.hlsl")
 
-    add_includedirs("Source/D3D12")
+    add_includedirs("Source/Core")
     add_includedirs("Source/Util")
-    add_includedirs("Source/Log")
 
     add_packages("benchmark", "quill", "nlohmann_json",
                 "imgui[dx12,win32]",
                 "assimp", "stb", "fastgltf",
-                "directx-headers", "directx12-agility", "d3d12-memory-allocator",
+                "directx12-agility", "d3d12-memory-allocator",
                 "directxtk12", "directxtex", "directxmath")
 end)
