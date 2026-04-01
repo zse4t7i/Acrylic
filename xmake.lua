@@ -29,7 +29,7 @@ add_defines("WIN32_LEAN_AND_MEAN")
 
 add_requires("benchmark", "quill", "nlohmann_json",
             "imgui[dx12,win32]",
-            "assimp", "stb", "fastgltf",
+            "tinygltf", "stb", "fastgltf",
             "directx12-agility", "d3d12-memory-allocator",
             "directxtk12", "directxtex", "directxmath")
 
@@ -112,7 +112,7 @@ target("Acrylic", function ()
 
     add_packages("benchmark", "quill", "nlohmann_json",
                 "imgui[dx12,win32]",
-                "assimp", "stb", "fastgltf",
+                "tinygltf", "stb", "fastgltf",
                 "directx12-agility", "d3d12-memory-allocator",
                 "directxtk12", "directxtex", "directxmath")
 end)

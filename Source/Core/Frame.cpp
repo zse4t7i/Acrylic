@@ -34,7 +34,7 @@ int IndexFrame{0};
 
 } // namespace
 
-namespace Acrylic::FrameResource
+namespace Acrylic::Frame
 {
 void Init()
 {
@@ -55,7 +55,7 @@ void Init()
     EventFence = CreateEventW(nullptr, false, false, nullptr);
     assert(EventFence != nullptr && "Failed to create fence event.");
 
-    LOG_INFO("Acrylic::FrameResource::Init() succeeded.");
+    LOG_INFO("Acrylic::Frame::Init() succeeded.");
 }
 
 void WaitForGPU()
@@ -94,4 +94,4 @@ auto GetCurrentCA() -> ID3D12CommandAllocator*
 {
     return FrameCAs[IndexFrame].Get();
 }
-} // namespace Acrylic::FrameResource
+} // namespace Acrylic::Frame

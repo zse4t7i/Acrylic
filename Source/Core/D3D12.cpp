@@ -222,7 +222,7 @@ void WaitForSwapChain()
 
 void Resize()
 {
-    // Acrylic::FrameResource::WaitForGPU();
+    // Acrylic::Frame::WaitForGPU();
 
     // Release the resources holding references to the swap chain (requirement
     // of IDXGISwapChain::ResizeBuffers)

@@ -21,7 +21,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
     Acrylic::Log::Init(LR"(Log\Acrylic.log)");
     Acrylic::Window::Init(hInst, nShowCmd);
     Acrylic::D3D12::Init();
-    Acrylic::FrameResource::Init();
+    Acrylic::Frame::Init();
     Acrylic::Scene::Init();
     LOG_INFO("Acrylic is ready!");
 
@@ -32,7 +32,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
     while (true)
     {
         Acrylic::D3D12::WaitForSwapChain();
-        Acrylic::FrameResource::MoveToNext();
+        Acrylic::Frame::MoveToNext();
 
         if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {

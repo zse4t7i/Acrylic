@@ -163,7 +163,7 @@ void CreatePSO()
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC descPSO{};
     descPSO.InputLayout    = D3D12_INPUT_LAYOUT_DESC{descsInputElement.data(),
-                                                  descsInputElement.size()};
+                                                     descsInputElement.size()};
     descPSO.pRootSignature = RS.Get();
     descPSO.VS = CD3DX12_SHADER_BYTECODE{binVS.data(), binVS.size()};
     descPSO.PS = CD3DX12_SHADER_BYTECODE{binPS.data(), binPS.size()};
@@ -252,10 +252,10 @@ void CreateCB()
 
 void CreateSR()
 {
-    hr = Acrylic::FrameResource::GetCurrentCA()->Reset();
+    hr = Acrylic::Frame::GetCurrentCA()->Reset();
     assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-    hr = CmdList->Reset(Acrylic::FrameResource::GetCurrentCA(), PSO.Get());
+    hr = CmdList->Reset(Acrylic::Frame::GetCurrentCA(), PSO.Get());
     assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
     D3D12MA::CALLOCATION_DESC descAllocDefault{
@@ -345,7 +345,7 @@ void CreateSR()
     std::vector<ID3D12CommandList*> cmdLists{CmdList};
     CmdQueue->ExecuteCommandLists(static_cast<std::uint32_t>(cmdLists.size()),
                                   cmdLists.data());
-    Acrylic::FrameResource::WaitForGPU();
+    Acrylic::Frame::WaitForGPU();
 }
 
 void populateCmdList()
@@ -362,10 +362,10 @@ void populateCmdList()
                              static_cast<long>(Acrylic::Window::GetWidth()),
                              static_cast<long>(Acrylic::Window::GetHeight())};
 
-    hr = Acrylic::FrameResource::GetCurrentCA()->Reset();
+    hr = Acrylic::Frame::GetCurrentCA()->Reset();
     assert(SUCCEEDED(hr) && "Failed to reset command allocator.");
 
-    hr = CmdList->Reset(Acrylic::FrameResource::GetCurrentCA(), PSO.Get());
+    hr = CmdList->Reset(Acrylic::Frame::GetCurrentCA(), PSO.Get());
     assert(SUCCEEDED(hr) && "Failed to reset command list.");
 
     CmdList->SetGraphicsRootSignature(RS.Get());
@@ -458,7 +458,10 @@ void Render()
     std::vector<ID3D12CommandList*> cmdLists{CmdList};
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 
+#ifdef DEBUG
+    Acrylic::D3D12::PresentTear();
+#else
     Acrylic::D3D12::PresentSync();
-    //Acrylic::D3D12::PresentTear();
+#endif
 }
 } // namespace Acrylic::Scene
