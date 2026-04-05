@@ -1,4 +1,4 @@
-#include "FrameResource.hpp"
+#include "Frame.hpp"
 #include "D3D12.hpp"
 #include "Log.hpp"
 

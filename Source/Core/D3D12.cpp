@@ -1,5 +1,4 @@
 #include "D3D12.hpp"
-#include "FrameResource.hpp"
 #include "Log.hpp"
 #include "Util.hpp"
 #include "Window.hpp"
