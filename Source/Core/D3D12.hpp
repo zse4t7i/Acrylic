@@ -1,7 +1,7 @@
 #pragma once
 
 #include <D3D12MemAlloc.h>
-#include <d3d12.h>
+#include <directx/d3d12.h>
 
 namespace Acrylic::D3D12
 {

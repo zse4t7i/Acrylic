@@ -8,8 +8,8 @@
 #include <DirectXColors.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
-#include <d3d12.h>
-#include <d3dx12/d3dx12.h>
+#include <directx/d3d12.h>
+#include <directx/d3dx12.h>
 
 #include <dxgi1_6.h>
 #include <windows.h>
@@ -83,7 +83,7 @@ void InitGraphicsPipeline()
         Acrylic::Util::UTF1628(descAdapter.Description, GPUName);
 
         hr = D3D12CreateDevice(adapter.Get(),
-                               D3D_FEATURE_LEVEL_12_2,
+                               D3D_FEATURE_LEVEL_12_1,
                                IID_PPV_ARGS(Device.GetAddressOf()));
         assert(SUCCEEDED(hr)
                && "Failed to find a dGPU that supports D3D12 "
