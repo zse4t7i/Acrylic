@@ -1,0 +1,21 @@
+{
+    "Project": {
+        "Name": "PerspectiveProject",
+        "WindowSize": [
+            1920,
+            1200
+        ],
+        "DefaultScene": "HelloWorld"
+    },
+    "Scene": [
+        {
+            "Name": "HelloWorld"
+        }
+    ],
+    "Entity": [
+        {}
+    ],
+    "Material": [
+        {}
+    ]
+}
