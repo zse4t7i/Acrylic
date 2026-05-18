@@ -2,5 +2,5 @@
 
 namespace Acrylic::Timer
 {
-
+void Init();
 }

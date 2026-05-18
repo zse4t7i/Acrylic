@@ -1,6 +1,8 @@
 set_project("Acrylic")
 set_version("0.0.1", {build = "%Y%m%d%H%M"})
 
+includes("Project")
+
 set_policy("build.progress_style", "multirow")
 set_xmakever("3.0.8")
 set_encodings("utf-8")
@@ -32,6 +34,8 @@ add_requires("quill")
 add_requires("benchmark")
 add_requires("nlohmann_json")
 add_requires("stb")
+add_requires("tbb")
+add_requires("entt")
 add_requires("tinygltf")
 add_requires("imgui[dx12,win32]")
 add_requires("d3d12-memory-allocator")
@@ -40,13 +44,6 @@ add_requires("directxtex")
 add_requires("directxmath")
 add_requires("directx-headers")
 add_requires("directx12-agility")
-
-rule("AssetCopy")
-    before_build(function (target)
-        os.cp("Asset/*", "bin/Asset/")
-
-        cprint("${bright green}Asset copied!")
-    end)
 
 rule("D3D12AgilitySDKCopy")
     before_build(function (target)
@@ -66,74 +63,17 @@ rule("D3D12AgilitySDKCopy")
         target:add("defines", "D3D12_AGILITY_SDK_VERSION=" .. version)
     end) 
 
-rule("ShaderCompile")
-    set_extensions(".hlsl")
-    on_buildcmd_file(function (target, batchcmds, sourcefile, opt)
-        -- Determine shader profile based on file name convention
-        -- (e.g., file.vs.hlsl, file.ps.hlsl)
-        local filename = path.filename(sourcefile)
-        local shaderProfile = "vs_6_7"
-        
-        if filename:match("%.vs%.hlsl$") then
-            shaderProfile = "vs_6_7"
-        elseif filename:match("%.ps%.hlsl$") then
-            shaderProfile = "ps_6_7"
-        elseif filename:match("%.cs%.hlsl$") then
-            shaderProfile = "cs_6_7"
-        end
-
-        -- Output to bin/Shader
-        local outputDir = path.join(target:targetdir(), "Shader")
-        local outputBin = path.join(
-            outputDir,
-            path.basename(sourcefile) .. ".bin"
-        )
-
-        -- Create output directory if it doesn't exist
-        os.mkdir(outputDir)
-
-        if is_mode("debug") then
-            local outputPdb = path.join(
-                outputDir,
-                path.basename(sourcefile) .. ".pdb"
-            )
-
-            batchcmds:vrunv("dxc", {
-                "-T", shaderProfile,
-                "-E", "Main",
-                "-Fo", outputBin,
-                "-Zi",
-                "-Fd", outputPdb,
-                sourcefile
-            })
-        elseif is_mode("release") then
-            batchcmds:vrunv("dxc", {
-                "-T", shaderProfile,
-                "-E", "Main",
-                "-Fo", outputBin,
-                sourcefile
-            })
-        end
-
-        batchcmds:add_depfiles(sourcefile)
-        batchcmds:set_depmtime(os.mtime(outputBin))
-        batchcmds:show_progress(
-            opt.progress, "${color.build.object}Compiling .HLSL %s", sourcefile)
-    end)
-
 target("Acrylic", function ()
     set_kind("binary")
     set_targetdir("bin")
+    add_deps("Project")
 
-    add_rules("AssetCopy")
     add_rules("D3D12AgilitySDKCopy")
-    add_rules("ShaderCompile")
     
     add_cxxflags("-fp:fast")
     add_syslinks("user32", "d3d12", "dxgi")
 
     add_files("Source/**.cpp")
-    add_files("Shader/**.hlsl")
 
     add_includedirs("Source/Core")
     add_includedirs("Source/Util")
@@ -142,6 +82,8 @@ target("Acrylic", function ()
     add_packages("benchmark")
     add_packages("nlohmann_json")
     add_packages("stb")
+    add_packages("tbb")
+    add_packages("entt")
     add_packages("tinygltf")
     add_packages("imgui[dx12,win32]")
     add_packages("d3d12-memory-allocator")

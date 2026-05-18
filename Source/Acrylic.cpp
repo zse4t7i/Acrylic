@@ -1,6 +1,7 @@
 #include "D3D12.hpp"
 #include "Frame.hpp"
 #include "Log.hpp"
+#include "Script.hpp"
 #include "Scene.hpp"
 #include "Window.hpp"
 
@@ -25,6 +26,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
     Acrylic::Frame::Init();
     Acrylic::Scene::Init();
     LOG_INFO("Acrylic is ready!");
+    Project::Script::Init();
 
     ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
 

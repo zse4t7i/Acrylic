@@ -1,25 +1,18 @@
-#include "Timer.hpp"
+#pragma once
 
-namespace
+namespace Acrylic::Renderer
 {
 //==============================================================================
 // Variable
 //==============================================================================
+inline constexpr int TEXELSIZE{4};
+inline constexpr int TEXTUREWIDTH{1024};
+inline constexpr int TEXTUREHEIGHT{1024};
 
 //==============================================================================
 // Function
 //==============================================================================
-
-} // namespace
-
-namespace Acrylic::Timer
-{
-void Init()
-{
-}
-
-//==============================================================================
-// Accessors
-//==============================================================================
-
-} // namespace Acrylic::Timer
+void Init();
+void Update();
+void Render();
+} // namespace Acrylic::Renderer

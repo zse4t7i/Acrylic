@@ -27,6 +27,9 @@ using Microsoft::WRL::ComPtr;
 
 namespace
 {
+//==============================================================================
+// Variable
+//==============================================================================
 HRESULT hr{};
 bool br{};
 
@@ -45,11 +48,11 @@ std::array<ComPtr<ID3D12Resource>, BUFFERCOUNT> RTs{};
 ComPtr<ID3D12DescriptorHeap> HeapRTV{};
 std::uint32_t OffsetRTV{0};
 
+//==============================================================================
+// Function
+//==============================================================================
 void InitGraphicsPipeline()
 {
-    br = DirectX::XMVerifyCPUSupport();
-    assert(br && "CPU doesn't support AVX2 instructions.");
-
     ComPtr<ID3D12Debug5> debugLayer{};
     ComPtr<IDXGIFactory6> factory{};
     ComPtr<IDXGIAdapter4> adapter{};
@@ -87,7 +90,7 @@ void InitGraphicsPipeline()
                                IID_PPV_ARGS(Device.GetAddressOf()));
         assert(SUCCEEDED(hr)
                && "Failed to find a dGPU that supports D3D12 "
-                  "Feature Level 12_2.");
+                  "Feature Level 12_1.");
 
 #ifdef DEBUG
         hr = Device.As(&infoQueue);
@@ -209,8 +212,11 @@ void Init()
 {
     InitGraphicsPipeline();
 
-    LOG_INFO("Feature Support: AVX2.");
-    LOG_INFO("Selected dGPU: {}.", GPUName);
+    br = DirectX::XMVerifyCPUSupport();
+    assert(br && "CPU doesn't support SSE2 instructions.");
+
+    LOG_INFO("Feature Support: SSE2.");
+    LOG_INFO("Selected GPU: {}.", GPUName);
     LOG_INFO("Acrylic::D3D12::Init() succeeded.");
 }
 

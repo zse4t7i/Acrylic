@@ -1,5 +1,5 @@
 CompileFlags:
-  Remove: ['-Wc++17-extensions']
+  Add: [-Wno-c++17-extensions, -Wno-braced-scalar-init]
 
 Completion:
   HeaderInsertion: Never
