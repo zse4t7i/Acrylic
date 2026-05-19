@@ -10,12 +10,12 @@
 namespace Acrylic::Log
 {
 //==============================================================================
-// Variable
+// External Variable
 //==============================================================================
 quill::Logger* MainLogger{};
 
 //==============================================================================
-// Function
+// External Function
 //==============================================================================
 void Init(const std::filesystem::path& logFilePath)
 {
@@ -25,7 +25,8 @@ void Init(const std::filesystem::path& logFilePath)
     // Setup sink and logger
     auto fileSink = quill::Frontend::create_or_get_sink<quill::FileSink>(
         logFilePath.string(),
-        []() {
+        []()
+        {
             quill::FileSinkConfig cfg;
             cfg.set_open_mode('w');
 #ifdef RELEASE

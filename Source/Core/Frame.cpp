@@ -16,7 +16,7 @@ using Microsoft::WRL::ComPtr;
 namespace
 {
 //==============================================================================
-// Variable
+// Internal Variable
 //==============================================================================
 HRESULT hr{};
 bool br{};
@@ -29,13 +29,15 @@ std::array<ComPtr<ID3D12CommandAllocator>, FRAMECOUNT> FrameCAs{};
 std::array<std::uint64_t, FRAMECOUNT> FrameFVs{0, 0};
 int IndexFrame{0};
 //==============================================================================
-// Function
+// Internal Function
 //==============================================================================
-
 } // namespace
 
 namespace Acrylic::Frame
 {
+//==============================================================================
+// External Function
+//==============================================================================
 void Init()
 {
     for (int i = 0; i < 2; i++)

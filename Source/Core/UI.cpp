@@ -1,4 +1,4 @@
-#include "Timer.hpp"
+#include "UI.hpp"
 
 namespace
 {
@@ -12,7 +12,7 @@ namespace
 
 } // namespace
 
-namespace Acrylic::Timer
+namespace Acrylic::UI
 {
 //==============================================================================
 // External Function
@@ -20,9 +20,10 @@ namespace Acrylic::Timer
 void Init()
 {
 }
-
-//==============================================================================
-// Accessors
-//==============================================================================
-
-} // namespace Acrylic::Timer
+void Update()
+{
+}
+void Render()
+{
+}
+} // namespace Acrylic::UI
