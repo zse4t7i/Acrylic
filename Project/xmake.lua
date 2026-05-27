@@ -1,16 +1,15 @@
 rule("CopyResource")
     before_build(function (target)
-        os.cp("$(scriptdir)/Mesh/*", "$(projectdir)/bin/Mesh/", {copy_if_different = true})
-        os.cp("$(scriptdir)/Texture/*", "$(projectdir)/bin/Texture/", {copy_if_different = true})
+        os.cp("$(scriptdir)/Mesh/", target:targetdir(), {copy_if_different = true})
+        os.cp("$(scriptdir)/Texture/", target:targetdir(), {copy_if_different = true})
 
         cprint("${bright green}Project resources copied!")
     end)
 
-
 rule("CompileShader")
     set_extensions(".hlsl")
     on_buildcmd_file(function (target, batchcmds, sourcefile, opt)
-        -- Determine shader profile based on file name convention
+        -- Determine shader profile based on file name convention.
         -- (e.g., file.vs.hlsl, file.ps.hlsl)
         local filename = path.filename(sourcefile)
         local shaderProfile = "vs_6_7"
@@ -23,7 +22,7 @@ rule("CompileShader")
             shaderProfile = "cs_6_7"
         end
 
-        -- Output to bin/Shader
+        -- Output to Shader/ folder in the output directory.
         local outputDir = path.join(target:targetdir(), "Shader")
         local outputBin = path.join(
             outputDir,
@@ -59,12 +58,12 @@ rule("CompileShader")
         batchcmds:add_depfiles(sourcefile)
         batchcmds:set_depmtime(os.mtime(outputBin))
         batchcmds:show_progress(
-            opt.progress, "${color.build.object}Compiling .HLSL %s", sourcefile)
+            opt.progress, "${color.build.object}Compiling HLSL: %s", sourcefile)
     end)
 
 target("Project", function ()
     set_kind("shared")
-    set_targetdir(path.join(os.projectdir(), "bin"))
+    set_pcxxheader("Script/PCH.hpp")
 
     add_rules("CopyResource")
     add_rules("CompileShader")
@@ -73,5 +72,5 @@ target("Project", function ()
     add_files("Script/**.cpp")
     add_files("Shader/**.hlsl")
 
-    add_includedirs("Script",{public=true})
+    add_includedirs("Script", {public=true})
 end)

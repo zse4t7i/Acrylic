@@ -1,19 +1,6 @@
 ---
-BasedOnStyle: Microsoft
----
 Language: Cpp
 Standard: Latest
-
-# |> Half-screen configuration
+BasedOnStyle: Microsoft
+IndentWidth: 4
 ColumnLimit: 80
-AlignConsecutiveAssignments: Consecutive
-AllowAllArgumentsOnNextLine: false
-BinPackArguments: false
-BinPackLongBracedList: true
-BinPackParameters: AlwaysOnePerLine
-AlignOperands: AlignAfterOperator
-BreakBeforeBinaryOperators: NonAssignment
-BreakBinaryOperations: RespectPrecedence
-PointerAlignment: Left
-BreakBeforeBraces: Allman
-# <| Half-screen configuration
