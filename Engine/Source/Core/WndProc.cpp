@@ -1,5 +1,3 @@
-#include "Window.hpp"
-
 // Forward declare message handler from imgui_impl_win32.cpp
 extern auto ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam,
                                            LPARAM lParam) -> LRESULT;

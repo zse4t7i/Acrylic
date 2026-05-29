@@ -32,7 +32,7 @@ auto WINAPI wWinMain(HINSTANCE hInst, HINSTANCE /*hPrevInst*/,
         Acrylic::D3D12::WaitForBufferAvailable();
         Acrylic::D3D12::WaitForFrameAvailable();
 
-        if (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+        while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
             {
@@ -40,6 +40,10 @@ auto WINAPI wWinMain(HINSTANCE hInst, HINSTANCE /*hPrevInst*/,
             }
             TranslateMessage(&msg);
             DispatchMessageW(&msg);
+        }
+        if (msg.message == WM_QUIT)
+        {
+            break;
         }
 
         { // Update
