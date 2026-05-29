@@ -29,11 +29,6 @@ auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg)
     {
-    case WM_DESTROY: {
-        PostQuitMessage(0);
-        return 0;
-    }
-
     case WM_SIZE: {
         Acrylic::Window::SetMinimized(wParam == SIZE_MINIMIZED);
         Acrylic::Window::SetWidth(LOWORD(lParam));
