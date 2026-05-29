@@ -1,5 +1,3 @@
-#include "Window.hpp"
-
 // Forward declare message handler from imgui_impl_win32.cpp
 extern auto ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam,
                                            LPARAM lParam) -> LRESULT;
@@ -31,11 +29,6 @@ auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     switch (uMsg)
     {
-    case WM_DESTROY: {
-        PostQuitMessage(0);
-        return 0;
-    }
-
     case WM_SIZE: {
         Acrylic::Window::SetMinimized(wParam == SIZE_MINIMIZED);
         Acrylic::Window::SetWidth(LOWORD(lParam));

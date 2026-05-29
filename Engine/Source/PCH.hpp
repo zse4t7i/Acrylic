@@ -23,6 +23,7 @@
 #include <DirectXColors.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
+#include <GameInput.h>
 #include <directx/d3d12.h>
 #include <directx/d3dx12.h>
 #include <entt/entt.hpp>
