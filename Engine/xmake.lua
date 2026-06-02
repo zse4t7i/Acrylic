@@ -1,8 +1,8 @@
-rule("CopyResource")
+rule("CopyEngineResource")
     before_build(function (target)
         os.cp("$(scriptdir)/Font/", target:targetdir(), {copy_if_different = true})
 
-        cprint("${bright green}Engine resources copied!")
+        cprint("${bright green}Engine's resources copied!")
     end)
 
 rule("CopyD3D12AgilitySDK")
@@ -29,7 +29,7 @@ target("Acrylic", function ()
     set_pcxxheader("Source/PCH.hpp")
     add_deps("Project")
 
-    add_rules("CopyResource")
+    add_rules("CopyEngineResource")
     add_rules("CopyD3D12AgilitySDK")
     
     add_cxxflags("-fp:fast")
@@ -54,8 +54,6 @@ target("Acrylic", function ()
     add_packages("directxmath")
     add_packages("directx-headers")
     add_packages("directx12-agility")
-    add_packages("D3D12AgilitySDK")
-    add_packages("D3D12DXC")
     add_packages("GameInput")
     add_packages("PIXEventRuntime")
 end)

@@ -15,6 +15,8 @@ auto WINAPI wWinMain(HINSTANCE hInst, HINSTANCE /*hPrevInst*/,
 {
     { // Init
         Acrylic::Log::Init("Log/Acrylic.log");
+        Acrylic::Timer::Init();
+        Acrylic::Input::Init();
         Acrylic::Window::Init(hInst);
         Acrylic::D3D12::Init();
         Acrylic::Scene::Init();
@@ -47,6 +49,8 @@ auto WINAPI wWinMain(HINSTANCE hInst, HINSTANCE /*hPrevInst*/,
         }
 
         { // Update
+            Acrylic::Timer::Update();
+            Acrylic::Input::Update();
             Acrylic::Scene::Update();
             Acrylic::UI::Update();
         }

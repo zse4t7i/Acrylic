@@ -1,9 +1,9 @@
-rule("CopyResource")
+rule("CopyProjectResource")
     before_build(function (target)
         os.cp("$(scriptdir)/Mesh/", target:targetdir(), {copy_if_different = true})
         os.cp("$(scriptdir)/Texture/", target:targetdir(), {copy_if_different = true})
 
-        cprint("${bright green}Project resources copied!")
+        cprint("${bright green}Project's resources copied!")
     end)
 
 rule("CompileShader")
@@ -65,7 +65,7 @@ target("Project", function ()
     set_kind("shared")
     set_pcxxheader("Script/PCH.hpp")
 
-    add_rules("CopyResource")
+    add_rules("CopyProjectResource")
     add_rules("CompileShader")
     add_rules("utils.symbols.export_all", {export_classes = true})
 

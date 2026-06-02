@@ -84,6 +84,7 @@ struct ComLight
 struct ComCamera
 {
     XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
+    XMFLOAT3 Direction{-1.0F, -1.0F, -1.0F};
     FP32 FOV{45.0F};
     FP32 AspectRatio{16.0F / 9.0F};
     FP32 PlaneNear{0.1F};
@@ -128,9 +129,9 @@ HRESULT HR{};
 bool BR{};
 
 // External D3D12 Objects
-ID3D12Device9 *Device;
-ID3D12CommandQueue *CmdQueue;
-D3D12MA::Allocator *MemAlctr;
+ID3D12Device9* Device;
+ID3D12CommandQueue* CmdQueue;
+D3D12MA::Allocator* MemAlctr;
 
 unique_ptr<Project> ProjectInstance{};
 unique_ptr<entt::registry> ECSRegistryInstance{};
@@ -142,7 +143,7 @@ vector<MemoryMaterial> MemoryMaterials{};
 ComPtr<ID3D12RootSignature> RS{};
 ComPtr<ID3D12PipelineState> PSO{};
 ComPtr<D3D12MA::Allocation> AllocCB{};
-void *PointerCB{};
+void* PointerCB{};
 ComPtr<ID3D12DescriptorHeap> HeapCSU{};
 ComPtr<ID3D12GraphicsCommandList6> CmdList{};
 array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT> CmdAlctrs{};
@@ -163,7 +164,8 @@ void InitInternalD3D12Objects()
         assert(SUCCEEDED(HR) && "Failed to create CSU descriptor heap.");
     }
 
-    HR = Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+    HR = Device->CreateCommandList1(0,
+                                    D3D12_COMMAND_LIST_TYPE_DIRECT,
                                     D3D12_COMMAND_LIST_FLAG_NONE,
                                     IID_PPV_ARGS(CmdList.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create command list.");
@@ -217,14 +219,14 @@ void InitMemoryCPU()
     unordered_map<string, vector<Byte>> loadedFiles{};
 
     // Pre-loading all resource files from resource folder.
-    for (const string &directory : {"Mesh", "Texture", "Shader"})
+    for (const string& directory : {"Mesh", "Texture", "Shader"})
     {
         if (!std::filesystem::exists(directory))
         {
             continue;
         }
 
-        for (const auto &entry :
+        for (const auto& entry :
              std::filesystem::recursive_directory_iterator(directory))
         {
             if (!entry.is_regular_file())
@@ -237,7 +239,7 @@ void InitMemoryCPU()
                 continue;
             }
 
-            const auto &filePath = entry.path();
+            const auto& filePath = entry.path();
             // TODO: Move fileContent out of the loop.
             vector<Byte> fileContent{};
 
@@ -258,22 +260,22 @@ void InitMemoryCPU()
     }
 
     // Acclocating for meshes.
-    for (const auto &diskMesh : ProjectInstance->DiskMeshes)
+    for (const auto& diskMesh : ProjectInstance->DiskMeshes)
     {
         assert(diskMesh.VertexBuffer.Path == diskMesh.IndexBuffer.Path &&
                "Vertex and index buffer must be in the same file.");
 
-        const auto &fileContent =
+        const auto& fileContent =
             loadedFiles[diskMesh.VertexBuffer.Path.filename().string()];
 
         U32 offsetVertex = diskMesh.VertexBuffer.Offset;
         U32 lengthVertex = diskMesh.VertexBuffer.Length == 0
                                ? fileContent.size() - offsetVertex
                                : diskMesh.VertexBuffer.Length;
-        U32 offsetIndex = diskMesh.IndexBuffer.Offset;
-        U32 lengthIndex = diskMesh.IndexBuffer.Length == 0
-                              ? fileContent.size() - offsetIndex
-                              : diskMesh.IndexBuffer.Length;
+        U32 offsetIndex  = diskMesh.IndexBuffer.Offset;
+        U32 lengthIndex  = diskMesh.IndexBuffer.Length == 0
+                               ? fileContent.size() - offsetIndex
+                               : diskMesh.IndexBuffer.Length;
 
         MemoryMeshes.emplace_back(MemoryMesh{
             .VertexBuffer{
@@ -286,7 +288,7 @@ void InitMemoryCPU()
 
     int heapOffset{1};
     // Acclocating for materials.
-    for (const auto &diskMaterial : ProjectInstance->DiskMaterials)
+    for (const auto& diskMaterial : ProjectInstance->DiskMaterials)
     {
         MemoryMaterial memoryMaterial{
             .ShaderVertex{
@@ -331,7 +333,7 @@ void InitMemoryCPU()
 void InitMemoryGPU()
 {
     auto frameIndex = Acrylic::D3D12::GetFrameIndex();
-    auto strideCSU = Acrylic::D3D12::GetStrideCSU();
+    auto strideCSU  = Acrylic::D3D12::GetStrideCSU();
 
     HR = CmdAlctrs[frameIndex]->Reset();
     assert(SUCCEEDED(HR) && "Failed to reset command allocator.");
@@ -339,41 +341,43 @@ void InitMemoryGPU()
     assert(SUCCEEDED(HR) && "Failed to reset command list.");
 
     // Processing BUFFERS (Vertex & Index)
-    for (auto &memMesh : MemoryMeshes)
+    for (auto& memMesh : MemoryMeshes)
     {
         // Vertex Buffer
         Acrylic::Util::UploadBuffer(
             memMesh.VertexBuffer.AllocCPU,
             memMesh.VertexBuffer.AllocDefault.GetAddressOf(),
-            memMesh.VertexBuffer.AllocUpload.GetAddressOf(), CmdList.Get(),
+            memMesh.VertexBuffer.AllocUpload.GetAddressOf(),
+            CmdList.Get(),
             MemAlctr);
 
         memMesh.VBV.BufferLocation =
             memMesh.VertexBuffer.AllocDefault->GetResource()
                 ->GetGPUVirtualAddress();
         memMesh.VBV.StrideInBytes = sizeof(FP32) * 5;
-        memMesh.VBV.SizeInBytes = memMesh.VertexBuffer.AllocCPU.size();
+        memMesh.VBV.SizeInBytes   = memMesh.VertexBuffer.AllocCPU.size();
 
         // Index Buffer
         Acrylic::Util::UploadBuffer(
             memMesh.IndexBuffer.AllocCPU,
             memMesh.IndexBuffer.AllocDefault.GetAddressOf(),
-            memMesh.IndexBuffer.AllocUpload.GetAddressOf(), CmdList.Get(),
+            memMesh.IndexBuffer.AllocUpload.GetAddressOf(),
+            CmdList.Get(),
             MemAlctr);
 
         memMesh.IBV.BufferLocation =
             memMesh.IndexBuffer.AllocDefault->GetResource()
                 ->GetGPUVirtualAddress();
-        memMesh.IBV.Format = DXGI_FORMAT_R16_UINT;
+        memMesh.IBV.Format      = DXGI_FORMAT_R16_UINT;
         memMesh.IBV.SizeInBytes = memMesh.IndexBuffer.AllocCPU.size();
     }
 
     // Processing TEXTURES (Texture2D)
-    for (auto &memMaterial : MemoryMaterials)
+    for (auto& memMaterial : MemoryMaterials)
     {
         D3D12_SHADER_RESOURCE_VIEW_DESC descSRV{
-            .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-            .ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+            .Format                  = DXGI_FORMAT_R8G8B8A8_UNORM,
+            .ViewDimension           = D3D12_SRV_DIMENSION_TEXTURE2D,
             .Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
             .Texture2D{.MipLevels = 1}};
 
@@ -383,14 +387,19 @@ void InitMemoryGPU()
                 memMaterial.TexBaseColor->AllocCPU,
                 memMaterial.TexBaseColor->AllocDefault.GetAddressOf(),
                 memMaterial.TexBaseColor->AllocUpload.GetAddressOf(),
-                CmdList.Get(), MemAlctr, 1024, 1024);
+                CmdList.Get(),
+                MemAlctr,
+                1024,
+                1024);
 
             // Create SRV for the texture.
             CD3DX12_CPU_DESCRIPTOR_HANDLE handleSRV{
                 HeapCSU->GetCPUDescriptorHandleForHeapStart(),
-                memMaterial.TexBaseColor->DescriptorHeapOffset, strideCSU};
+                memMaterial.TexBaseColor->DescriptorHeapOffset,
+                strideCSU};
             Device->CreateShaderResourceView(
-                memMaterial.TexBaseColor->AllocDefault->GetResource(), &descSRV,
+                memMaterial.TexBaseColor->AllocDefault->GetResource(),
+                &descSRV,
                 handleSRV);
         }
         if (memMaterial.TexNormal.has_value())
@@ -399,14 +408,19 @@ void InitMemoryGPU()
                 memMaterial.TexNormal->AllocCPU,
                 memMaterial.TexNormal->AllocDefault.GetAddressOf(),
                 memMaterial.TexNormal->AllocUpload.GetAddressOf(),
-                CmdList.Get(), MemAlctr, 1024, 1024);
+                CmdList.Get(),
+                MemAlctr,
+                1024,
+                1024);
 
             // Create SRV for the texture.
             CD3DX12_CPU_DESCRIPTOR_HANDLE handleSRV{
                 HeapCSU->GetCPUDescriptorHandleForHeapStart(),
-                memMaterial.TexNormal->DescriptorHeapOffset, strideCSU};
+                memMaterial.TexNormal->DescriptorHeapOffset,
+                strideCSU};
             Device->CreateShaderResourceView(
-                memMaterial.TexNormal->AllocDefault->GetResource(), &descSRV,
+                memMaterial.TexNormal->AllocDefault->GetResource(),
+                &descSRV,
                 handleSRV);
         }
         if (memMaterial.TexARM.has_value())
@@ -414,15 +428,20 @@ void InitMemoryGPU()
             Acrylic::Util::UploadTexture(
                 memMaterial.TexARM->AllocCPU,
                 memMaterial.TexARM->AllocDefault.GetAddressOf(),
-                memMaterial.TexARM->AllocUpload.GetAddressOf(), CmdList.Get(),
-                MemAlctr, 1024, 1024);
+                memMaterial.TexARM->AllocUpload.GetAddressOf(),
+                CmdList.Get(),
+                MemAlctr,
+                1024,
+                1024);
 
             // Create SRV for the texture.
             CD3DX12_CPU_DESCRIPTOR_HANDLE handleSRV{
                 HeapCSU->GetCPUDescriptorHandleForHeapStart(),
-                memMaterial.TexARM->DescriptorHeapOffset, strideCSU};
+                memMaterial.TexARM->DescriptorHeapOffset,
+                strideCSU};
             Device->CreateShaderResourceView(
-                memMaterial.TexARM->AllocDefault->GetResource(), &descSRV,
+                memMaterial.TexARM->AllocDefault->GetResource(),
+                &descSRV,
                 handleSRV);
         }
         if (memMaterial.TexEmissive.has_value())
@@ -431,14 +450,19 @@ void InitMemoryGPU()
                 memMaterial.TexEmissive->AllocCPU,
                 memMaterial.TexEmissive->AllocDefault.GetAddressOf(),
                 memMaterial.TexEmissive->AllocUpload.GetAddressOf(),
-                CmdList.Get(), MemAlctr, 1024, 1024);
+                CmdList.Get(),
+                MemAlctr,
+                1024,
+                1024);
 
             // Create SRV for the texture.
             CD3DX12_CPU_DESCRIPTOR_HANDLE handleSRV{
                 HeapCSU->GetCPUDescriptorHandleForHeapStart(),
-                memMaterial.TexEmissive->DescriptorHeapOffset, strideCSU};
+                memMaterial.TexEmissive->DescriptorHeapOffset,
+                strideCSU};
             Device->CreateShaderResourceView(
-                memMaterial.TexEmissive->AllocDefault->GetResource(), &descSRV,
+                memMaterial.TexEmissive->AllocDefault->GetResource(),
+                &descSRV,
                 handleSRV);
         }
     }
@@ -446,7 +470,7 @@ void InitMemoryGPU()
     HR = CmdList->Close();
     assert(SUCCEEDED(HR) && "Failed to close command list.");
 
-    vector<ID3D12CommandList *> cmdLists{CmdList.Get()};
+    vector<ID3D12CommandList*> cmdLists{CmdList.Get()};
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
     Acrylic::D3D12::WaitForCmdExecuted();
 }
@@ -455,8 +479,8 @@ void InitECSRegistry()
 {
     ECSRegistryInstance = std::make_unique<entt::registry>();
 
-    auto &registry = *ECSRegistryInstance;
-    auto &entities = ProjectInstance->Entities;
+    auto& registry        = *ECSRegistryInstance;
+    auto& entities        = ProjectInstance->Entities;
     auto numberOfEntities = entities.size();
     for (auto i = 0; i < numberOfEntities; i++)
     {
@@ -482,30 +506,40 @@ void InitECSRegistry()
 void CreateRS()
 {
     array<CD3DX12_DESCRIPTOR_RANGE1, 2> ranges{
-        CD3DX12_DESCRIPTOR_RANGE1{D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0,
-                                  D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, 0},
-        CD3DX12_DESCRIPTOR_RANGE1{D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 0, 0,
-                                  D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC, 1}};
+        CD3DX12_DESCRIPTOR_RANGE1{D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+                                  1,
+                                  0,
+                                  0,
+                                  D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+                                  0},
+        CD3DX12_DESCRIPTOR_RANGE1{D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+                                  3,
+                                  0,
+                                  0,
+                                  D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC,
+                                  1}};
 
     array<CD3DX12_ROOT_PARAMETER1, 2> rootParameters{};
-    rootParameters[0].InitAsDescriptorTable(1, &ranges[0],
+    rootParameters[0].InitAsDescriptorTable(1,
+                                            &ranges[0],
                                             D3D12_SHADER_VISIBILITY_ALL);
-    rootParameters[1].InitAsDescriptorTable(1, &ranges[1],
+    rootParameters[1].InitAsDescriptorTable(1,
+                                            &ranges[1],
                                             D3D12_SHADER_VISIBILITY_PIXEL);
 
     D3D12_STATIC_SAMPLER_DESC sampler{};
-    sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-    sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-    sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-    sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-    sampler.MipLODBias = 0;
-    sampler.MaxAnisotropy = 0;
-    sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-    sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-    sampler.MinLOD = 0.0F;
-    sampler.MaxLOD = FP32_MAX;
-    sampler.ShaderRegister = 0;
-    sampler.RegisterSpace = 0;
+    sampler.Filter           = D3D12_FILTER_MIN_MAG_MIP_POINT;
+    sampler.AddressU         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.AddressV         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.AddressW         = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.MipLODBias       = 0;
+    sampler.MaxAnisotropy    = 0;
+    sampler.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
+    sampler.BorderColor      = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+    sampler.MinLOD           = 0.0F;
+    sampler.MaxLOD           = FP32_MAX;
+    sampler.ShaderRegister   = 0;
+    sampler.RegisterSpace    = 0;
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
     // Allow input layout and deny uneccessary access to certain pipeline
@@ -517,17 +551,22 @@ void CreateRS()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
     CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC descRS{};
-    descRS.Init_1_1(rootParameters.size(), rootParameters.data(), 1, &sampler,
+    descRS.Init_1_1(rootParameters.size(),
+                    rootParameters.data(),
+                    1,
+                    &sampler,
                     flagRS);
 
     ComPtr<ID3DBlob> svrs{};
     ComPtr<ID3DBlob> error{};
-    HR = D3DX12SerializeVersionedRootSignature(
-        &descRS, D3D_ROOT_SIGNATURE_VERSION_1_1, svrs.GetAddressOf(),
-        error.GetAddressOf());
+    HR = D3DX12SerializeVersionedRootSignature(&descRS,
+                                               D3D_ROOT_SIGNATURE_VERSION_1_1,
+                                               svrs.GetAddressOf(),
+                                               error.GetAddressOf());
     assert(SUCCEEDED(HR) && "Failed to serialize versioned root signature.");
 
-    HR = Device->CreateRootSignature(0, svrs->GetBufferPointer(),
+    HR = Device->CreateRootSignature(0,
+                                     svrs->GetBufferPointer(),
                                      svrs->GetBufferSize(),
                                      IID_PPV_ARGS(RS.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create versioned root signature.");
@@ -536,33 +575,40 @@ void CreateRS()
 void CreatePSO()
 {
     constexpr array<D3D12_INPUT_ELEMENT_DESC, 2> descsInputElement{
-        D3D12_INPUT_ELEMENT_DESC{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,
+        D3D12_INPUT_ELEMENT_DESC{"POSITION",
+                                 0,
+                                 DXGI_FORMAT_R32G32B32_FLOAT,
+                                 0,
                                  D3D12_APPEND_ALIGNED_ELEMENT,
-                                 D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-        D3D12_INPUT_ELEMENT_DESC{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0,
+                                 D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+                                 0},
+        D3D12_INPUT_ELEMENT_DESC{"TEXCOORD",
+                                 0,
+                                 DXGI_FORMAT_R32G32_FLOAT,
+                                 0,
                                  D3D12_APPEND_ALIGNED_ELEMENT,
                                  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
                                  0}};
 
     D3D12_GRAPHICS_PIPELINE_STATE_DESC descPSO{};
-    descPSO.InputLayout = D3D12_INPUT_LAYOUT_DESC{descsInputElement.data(),
-                                                  descsInputElement.size()};
+    descPSO.InputLayout    = D3D12_INPUT_LAYOUT_DESC{descsInputElement.data(),
+                                                     descsInputElement.size()};
     descPSO.pRootSignature = RS.Get();
-    descPSO.VS = CD3DX12_SHADER_BYTECODE{
+    descPSO.VS             = CD3DX12_SHADER_BYTECODE{
         MemoryMaterials[0].ShaderVertex.AllocCPU.data(),
         MemoryMaterials[0].ShaderVertex.AllocCPU.size()};
     descPSO.PS =
         CD3DX12_SHADER_BYTECODE{MemoryMaterials[0].ShaderPixel.AllocCPU.data(),
                                 MemoryMaterials[0].ShaderPixel.AllocCPU.size()};
     descPSO.RasterizerState = CD3DX12_RASTERIZER_DESC{D3D12_DEFAULT};
-    descPSO.BlendState = CD3DX12_BLEND_DESC{D3D12_DEFAULT};
-    descPSO.DepthStencilState.DepthEnable = false;
+    descPSO.BlendState      = CD3DX12_BLEND_DESC{D3D12_DEFAULT};
+    descPSO.DepthStencilState.DepthEnable   = false;
     descPSO.DepthStencilState.StencilEnable = false;
-    descPSO.SampleMask = U32_MAX;
+    descPSO.SampleMask                      = U32_MAX;
     descPSO.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-    descPSO.NumRenderTargets = 1;
-    descPSO.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-    descPSO.SampleDesc.Count = 1;
+    descPSO.NumRenderTargets      = 1;
+    descPSO.RTVFormats[0]         = DXGI_FORMAT_R8G8B8A8_UNORM;
+    descPSO.SampleDesc.Count      = 1;
 
     HR = Device->CreateGraphicsPipelineState(&descPSO,
                                              IID_PPV_ARGS(PSO.GetAddressOf()));
@@ -574,19 +620,25 @@ void CreateCB()
     // CB size must be 256-byte aligned.
     U32 sizeCB = (sizeof(ConstantBuffer) + 255) & ~255;
     D3D12MA::CALLOCATION_DESC descUpload{
-        D3D12_HEAP_TYPE_UPLOAD, D3D12MA::ALLOCATION_FLAG_STRATEGY_MIN_MEMORY};
+        D3D12_HEAP_TYPE_UPLOAD,
+        D3D12MA::ALLOCATION_FLAG_STRATEGY_MIN_MEMORY};
     CD3DX12_RESOURCE_DESC descRes = CD3DX12_RESOURCE_DESC::Buffer(sizeCB);
 
-    HR = MemAlctr->CreateResource(&descUpload, &descRes,
-                                  D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-                                  AllocCB.GetAddressOf(), IID_NULL, nullptr);
+    HR = MemAlctr->CreateResource(&descUpload,
+                                  &descRes,
+                                  D3D12_RESOURCE_STATE_GENERIC_READ,
+                                  nullptr,
+                                  AllocCB.GetAddressOf(),
+                                  IID_NULL,
+                                  nullptr);
     assert(SUCCEEDED(HR) && "Failed to create constant buffer.");
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC descCBV{};
     descCBV.BufferLocation = AllocCB->GetResource()->GetGPUVirtualAddress();
-    descCBV.SizeInBytes = sizeCB;
+    descCBV.SizeInBytes    = sizeCB;
     Device->CreateConstantBufferView(
-        &descCBV, HeapCSU->GetCPUDescriptorHandleForHeapStart());
+        &descCBV,
+        HeapCSU->GetCPUDescriptorHandleForHeapStart());
 
     CD3DX12_RANGE readRange{0, 0};
     HR = AllocCB->GetResource()->Map(0, &readRange, &PointerCB);
@@ -603,7 +655,7 @@ namespace Acrylic::Scene
 //==============================================================================
 void Init()
 {
-    Device = Acrylic::D3D12::GetDevice();
+    Device   = Acrylic::D3D12::GetDevice();
     MemAlctr = Acrylic::D3D12::GetMemAllocator();
     CmdQueue = Acrylic::D3D12::GetCmdQueue();
 
@@ -627,31 +679,107 @@ void Update()
     XMMATRIX projection{};
     XMMATRIX viewProjection{};
 
+    auto& inputState = Acrylic::Input::GetState();
+
     auto viewLight = ECSRegistryInstance->view<ComLight>();
-    viewLight.each([&](const auto &light) -> auto { cb.Color = light.Color; });
+    viewLight.each([&](const auto& light) -> auto { cb.Color = light.Color; });
 
     auto viewCamera = ECSRegistryInstance->view<ComCamera>();
-    for (const auto &[entity, camera] : viewCamera.each())
+    for (const auto& [entity, camera] : viewCamera.each())
     {
-        projection = XMMatrixPerspectiveFovLH(
-            XMConvertToRadians(camera.FOV), camera.AspectRatio,
-            camera.PlaneNear, camera.PlaneFar);
+        projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(camera.FOV),
+                                              camera.AspectRatio,
+                                              camera.PlaneNear,
+                                              camera.PlaneFar);
 
+        // TODO: NEED REWRITE! Simple camera control for test.
+        // FPS camera control using input system
         XMVECTOR eye = XMLoadFloat3(&camera.Position);
-        XMVECTOR at = XMVectorSet(0.0F, 0.0F, 0.0F, 0.0F);
-        XMVECTOR up = XMVectorSet(0.0F, 1.0F, 0.0F, 0.0F);
-        XMMATRIX view = XMMatrixLookAtLH(eye, at, up);
+        XMVECTOR at  = XMLoadFloat3(&camera.Direction);
+        XMVECTOR up  = XMVectorSet(0.0F, 1.0F, 0.0F, 0.0F);
 
+        // Calculate forward, right, and up vectors for camera movement
+        XMVECTOR forward = XMVector3Normalize(XMVectorSubtract(at, eye));
+        XMVECTOR right   = XMVector3Normalize(XMVector3Cross(forward, up));
+        XMVECTOR trueUp  = XMVector3Cross(right, forward);
+
+        // Movement speed
+        FP32 moveSpeed    = 0.001F; // Base movement speed per frame
+        FP32 acceleration = 2.0F;   // Speed multiplier when holding LSHIFT
+
+        // Check if LSHIFT is held (index 8)
+        const bool isShiftHeld =
+            inputState.KeyboardKeys[8] == Acrylic::Input::ButtonState::Held;
+        FP32 currentSpeed = isShiftHeld ? moveSpeed * acceleration : moveSpeed;
+
+        // Handle forward/backward movement (W/S or UP/DOWN)
+        if (inputState.KeyboardKeys[0] == Acrylic::Input::ButtonState::Held ||
+            inputState.KeyboardKeys[4] ==
+                Acrylic::Input::ButtonState::Held) // W
+            eye = XMVectorAdd(eye, XMVectorScale(forward, currentSpeed));
+        if (inputState.KeyboardKeys[1] == Acrylic::Input::ButtonState::Held ||
+            inputState.KeyboardKeys[5] ==
+                Acrylic::Input::ButtonState::Held) // S
+            eye = XMVectorSubtract(eye, XMVectorScale(forward, currentSpeed));
+
+        // Handle left/right movement (A/D or LEFT/RIGHT)
+        if (inputState.KeyboardKeys[2] == Acrylic::Input::ButtonState::Held ||
+            inputState.KeyboardKeys[6] ==
+                Acrylic::Input::ButtonState::Held) // A
+            eye = XMVectorAdd(eye, XMVectorScale(right, currentSpeed));
+        if (inputState.KeyboardKeys[3] == Acrylic::Input::ButtonState::Held ||
+            inputState.KeyboardKeys[7] ==
+                Acrylic::Input::ButtonState::Held) // D
+            eye = XMVectorSubtract(eye, XMVectorScale(right, currentSpeed));
+
+        // Update camera position
+        XMStoreFloat3(&camera.Position, eye);
+
+        // Handle mouse look for camera direction
+        FP32 mouseSensitivity = 0.001F;
+        XMVECTOR yawAxis      = trueUp; // Rotate around world up for yaw
+        XMVECTOR pitchAxis    = right;  // Rotate around right vector for pitch
+
+        // Apply yaw (horizontal mouse movement - DeltaPX)
+        if (inputState.DeltaPX != 0.0F)
+        {
+            XMMATRIX yawRotation =
+                XMMatrixRotationAxis(yawAxis,
+                                     inputState.DeltaPX * mouseSensitivity);
+            forward = XMVector3TransformCoord(forward, yawRotation);
+        }
+
+        // Apply pitch (vertical mouse movement - DeltaPY)
+        if (inputState.DeltaPY != 0.0F)
+        {
+            XMMATRIX pitchRotation =
+                XMMatrixRotationAxis(pitchAxis,
+                                     inputState.DeltaPY * mouseSensitivity);
+            forward = XMVector3TransformCoord(forward, pitchRotation);
+        }
+
+        // Update camera direction
+        at = XMVectorAdd(eye, forward);
+        XMStoreFloat3(&camera.Direction, at);
+
+        // Calculate view and projection matrices
+        XMMATRIX view  = XMMatrixLookAtLH(eye, at, trueUp);
         viewProjection = XMMatrixMultiply(view, projection);
+
+        // XMVECTOR eye  = XMLoadFloat3(&camera.Position);
+        // XMVECTOR at   = XMLoadFloat3(&camera.Direction);
+        // XMVECTOR up   = XMVectorSet(0.0F, 1.0F, 0.0F, 0.0F);
+        // XMMATRIX view = XMMatrixLookAtLH(eye, at, up);
+        // viewProjection = XMMatrixMultiply(view, projection);
     }
 
     auto viewRenderable = ECSRegistryInstance->view<ComRenderable>();
-    for (const auto &[entity, renderable] : viewRenderable.each())
+    for (const auto& [entity, renderable] : viewRenderable.each())
     {
         // From ComRenderable
         XMFLOAT3 position = renderable.Position; // Translation
         XMFLOAT3 rotation = renderable.Rotation; // Euler angles (radians)
-        XMFLOAT3 scale = renderable.Scale;       // Scale factors
+        XMFLOAT3 scale    = renderable.Scale;    // Scale factors
 
         // Build Model Matrix (Scale → Rotate → Translate)
         XMMATRIX matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
@@ -674,7 +802,7 @@ void Update()
 
 void Render()
 {
-    auto *currentRT = Acrylic::D3D12::GetCurrentRT();
+    auto* currentRT = Acrylic::D3D12::GetCurrentRT();
     auto currentRTV = Acrylic::D3D12::GetCurrentRTV();
     auto frameIndex = Acrylic::D3D12::GetFrameIndex();
 
@@ -683,11 +811,14 @@ void Render()
     HR = CmdList->Reset(CmdAlctrs[frameIndex].Get(), PSO.Get());
     assert(SUCCEEDED(HR) && "Failed to reset command list.");
 
-    CD3DX12_VIEWPORT Viewport{0.0F, 0.0F,
+    CD3DX12_VIEWPORT Viewport{0.0F,
+                              0.0F,
                               static_cast<FP32>(Acrylic::Window::GetWidth()),
                               static_cast<FP32>(Acrylic::Window::GetHeight())};
 
-    CD3DX12_RECT ScissorRect{0, 0, Acrylic::Window::GetWidth(),
+    CD3DX12_RECT ScissorRect{0,
+                             0,
+                             Acrylic::Window::GetWidth(),
                              Acrylic::Window::GetHeight()};
 
     CmdList->RSSetViewports(1, &Viewport);
@@ -695,16 +826,19 @@ void Render()
     CmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     CmdList->SetGraphicsRootSignature(RS.Get());
 
-    vector<ID3D12DescriptorHeap *> heaps{HeapCSU.Get()};
+    vector<ID3D12DescriptorHeap*> heaps{HeapCSU.Get()};
     CmdList->SetDescriptorHeaps(heaps.size(), heaps.data());
 
     CmdList->SetGraphicsRootDescriptorTable(
-        0, HeapCSU->GetGPUDescriptorHandleForHeapStart());
+        0,
+        HeapCSU->GetGPUDescriptorHandleForHeapStart());
     CmdList->SetGraphicsRootDescriptorTable(
-        1, HeapCSU->GetGPUDescriptorHandleForHeapStart());
+        1,
+        HeapCSU->GetGPUDescriptorHandleForHeapStart());
 
     auto p2r = CD3DX12_RESOURCE_BARRIER::Transition(
-        currentRT, D3D12_RESOURCE_STATE_PRESENT,
+        currentRT,
+        D3D12_RESOURCE_STATE_PRESENT,
         D3D12_RESOURCE_STATE_RENDER_TARGET);
     CmdList->ResourceBarrier(1, &p2r);
 
@@ -714,27 +848,31 @@ void Render()
     CmdList->ClearRenderTargetView(currentRTV, clearColor.data(), 0, nullptr);
 
     auto viewRenderable = ECSRegistryInstance->view<ComRenderable>();
-    for (const auto &[entity, renderable] : viewRenderable.each())
+    for (const auto& [entity, renderable] : viewRenderable.each())
     {
-        for (const auto &index : renderable.MeshIndices)
+        for (const auto& index : renderable.MeshIndices)
         {
             CmdList->IASetVertexBuffers(0, 1, &MemoryMeshes[index].VBV);
             CmdList->IASetIndexBuffer(&MemoryMeshes[index].IBV);
             CmdList->DrawIndexedInstanced(
-                MemoryMeshes[index].IndexBuffer.AllocCPU.size() / 2, 1, 0, 0,
+                MemoryMeshes[index].IndexBuffer.AllocCPU.size() / 2,
+                1,
+                0,
+                0,
                 0);
         }
     }
 
-    auto r2p = CD3DX12_RESOURCE_BARRIER::Transition(
-        currentRT, D3D12_RESOURCE_STATE_RENDER_TARGET,
-        D3D12_RESOURCE_STATE_PRESENT);
+    auto r2p =
+        CD3DX12_RESOURCE_BARRIER::Transition(currentRT,
+                                             D3D12_RESOURCE_STATE_RENDER_TARGET,
+                                             D3D12_RESOURCE_STATE_PRESENT);
     CmdList->ResourceBarrier(1, &r2p);
 
     HR = CmdList->Close();
     assert(SUCCEEDED(HR) && "Failed to close command list.");
 
-    vector<ID3D12CommandList *> cmdLists{CmdList.Get()};
+    vector<ID3D12CommandList*> cmdLists{CmdList.Get()};
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 }
 //==============================================================================

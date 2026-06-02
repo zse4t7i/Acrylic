@@ -11,9 +11,8 @@ LARGE_INTEGER TimeStampStart;
 LARGE_INTEGER TimeStampCurrent;
 LARGE_INTEGER TimeStampPrevious;
 
-// Measured in seconds.
+// All Measured in seconds.
 FP64 TimeTotal{0.0};
-// Measured in milliseconds.
 FP64 TimeDelta{0.0};
 
 U64 FrameCounter{0};
@@ -31,7 +30,7 @@ void Init()
 {
     QueryPerformanceFrequency(&CounterFrequency);
     QueryPerformanceCounter(&TimeStampStart);
-    TimeStampCurrent = TimeStampStart;
+    TimeStampCurrent  = TimeStampStart;
     TimeStampPrevious = TimeStampStart;
 }
 void Update()
@@ -42,7 +41,7 @@ void Update()
     FrameCounter++;
     TimeDelta = static_cast<FP64>(TimeStampCurrent.QuadPart -
                                   TimeStampPrevious.QuadPart) /
-                static_cast<FP64>(CounterFrequency.QuadPart) * 1000;
+                static_cast<FP64>(CounterFrequency.QuadPart);
     TimeTotal =
         static_cast<FP64>(TimeStampCurrent.QuadPart - TimeStampStart.QuadPart) /
         static_cast<FP64>(CounterFrequency.QuadPart);

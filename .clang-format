@@ -4,3 +4,18 @@ Standard: Latest
 BasedOnStyle: Microsoft
 IndentWidth: 4
 ColumnLimit: 80
+
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: true
+  AlignFunctionDeclarations: false
+  AlignFunctionPointers: false
+  PadOperators: true
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false
+BinPackParameters: OnePerLine
+PointerAlignment: Left

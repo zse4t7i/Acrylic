@@ -34,8 +34,6 @@ add_requires("directxtex")
 add_requires("directxmath")
 add_requires("directx-headers")
 add_requires("directx12-agility")
-add_requires("nuget::Microsoft.Direct3D.D3D12", {alias = "D3D12AgilitySDK"})
-add_requires("nuget::Microsoft.Direct3D.DXC", {alias = "D3D12DXC"})
 add_requires("nuget::Microsoft.GameInput", {alias = "GameInput"})
 add_requires("nuget::WinPixEventRuntime", {alias = "PIXEventRuntime"})
 

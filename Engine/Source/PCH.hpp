@@ -74,6 +74,14 @@ using std::filesystem::path;
 using Byte = std::byte;
 using JSON = nlohmann::json;
 
+// Integer 8
+using U8 = std::uint8_t;
+inline constexpr U8 U8_MAX{std::numeric_limits<U8>::max()};
+inline constexpr U8 U8_MIN{std::numeric_limits<U8>::min()};
+using I8 = std::int8_t;
+inline constexpr I8 I8_MAX{std::numeric_limits<I8>::max()};
+inline constexpr I8 I8_MIN{std::numeric_limits<I8>::min()};
+
 // Integer 16
 using U16 = std::uint16_t;
 inline constexpr U16 U16_MAX{std::numeric_limits<U16>::max()};
@@ -109,6 +117,7 @@ inline constexpr FP64 FP64_MIN{std::numeric_limits<FP64>::min()};
 
 // Acrylic Header
 #include "D3D12.hpp"
+#include "Input.hpp"
 #include "Log.hpp"
 #include "Timer.hpp"
 #include "Util.hpp"
