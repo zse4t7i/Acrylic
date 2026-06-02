@@ -20,10 +20,10 @@ namespace Acrylic::Log
 //==============================================================================
 // External Variable
 //==============================================================================
-extern quill::Logger *AcrylicLogger;
+extern quill::Logger* AcrylicLogger;
 //==============================================================================
 // External Function
 //==============================================================================
-void Init(const path &logFilePath);
+void Init(const path& logFilePath);
 void Flush();
 } // namespace Acrylic::Log

@@ -78,17 +78,17 @@ struct ComLight
 {
     XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
     XMFLOAT4 Color{1.0F, 1.0F, 1.0F, 1.0F};
-    FP32 Intensity{1.0F};
+    F32 Intensity{1.0F};
 };
 
 struct ComCamera
 {
     XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
     XMFLOAT3 Direction{-1.0F, -1.0F, -1.0F};
-    FP32 FOV{45.0F};
-    FP32 AspectRatio{16.0F / 9.0F};
-    FP32 PlaneNear{0.1F};
-    FP32 PlaneFar{1000.0F};
+    F32 FOV{45.0F};
+    F32 AspectRatio{16.0F / 9.0F};
+    F32 PlaneNear{0.1F};
+    F32 PlaneFar{1000.0F};
 };
 
 struct Entity
@@ -354,7 +354,7 @@ void InitMemoryGPU()
         memMesh.VBV.BufferLocation =
             memMesh.VertexBuffer.AllocDefault->GetResource()
                 ->GetGPUVirtualAddress();
-        memMesh.VBV.StrideInBytes = sizeof(FP32) * 5;
+        memMesh.VBV.StrideInBytes = sizeof(F32) * 5;
         memMesh.VBV.SizeInBytes   = memMesh.VertexBuffer.AllocCPU.size();
 
         // Index Buffer
@@ -537,7 +537,7 @@ void CreateRS()
     sampler.ComparisonFunc   = D3D12_COMPARISON_FUNC_NEVER;
     sampler.BorderColor      = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
     sampler.MinLOD           = 0.0F;
-    sampler.MaxLOD           = FP32_MAX;
+    sampler.MaxLOD           = F32_MAX;
     sampler.ShaderRegister   = 0;
     sampler.RegisterSpace    = 0;
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
@@ -704,13 +704,13 @@ void Update()
         XMVECTOR trueUp  = XMVector3Cross(right, forward);
 
         // Movement speed
-        FP32 moveSpeed    = 0.001F; // Base movement speed per frame
-        FP32 acceleration = 2.0F;   // Speed multiplier when holding LSHIFT
+        F32 moveSpeed    = 0.001F; // Base movement speed per frame
+        F32 acceleration = 2.0F;   // Speed multiplier when holding LSHIFT
 
         // Check if LSHIFT is held (index 8)
         const bool isShiftHeld =
             inputState.KeyboardKeys[8] == Acrylic::Input::ButtonState::Held;
-        FP32 currentSpeed = isShiftHeld ? moveSpeed * acceleration : moveSpeed;
+        F32 currentSpeed = isShiftHeld ? moveSpeed * acceleration : moveSpeed;
 
         // Handle forward/backward movement (W/S or UP/DOWN)
         if (inputState.KeyboardKeys[0] == Acrylic::Input::ButtonState::Held ||
@@ -736,9 +736,9 @@ void Update()
         XMStoreFloat3(&camera.Position, eye);
 
         // Handle mouse look for camera direction
-        FP32 mouseSensitivity = 0.001F;
-        XMVECTOR yawAxis      = trueUp; // Rotate around world up for yaw
-        XMVECTOR pitchAxis    = right;  // Rotate around right vector for pitch
+        F32 mouseSensitivity = 0.001F;
+        XMVECTOR yawAxis     = trueUp; // Rotate around world up for yaw
+        XMVECTOR pitchAxis   = right;  // Rotate around right vector for pitch
 
         // Apply yaw (horizontal mouse movement - DeltaPX)
         if (inputState.DeltaPX != 0.0F)
@@ -813,8 +813,8 @@ void Render()
 
     CD3DX12_VIEWPORT Viewport{0.0F,
                               0.0F,
-                              static_cast<FP32>(Acrylic::Window::GetWidth()),
-                              static_cast<FP32>(Acrylic::Window::GetHeight())};
+                              static_cast<F32>(Acrylic::Window::GetWidth()),
+                              static_cast<F32>(Acrylic::Window::GetHeight())};
 
     CD3DX12_RECT ScissorRect{0,
                              0,
@@ -844,7 +844,7 @@ void Render()
 
     CmdList->OMSetRenderTargets(1, &currentRTV, false, nullptr);
 
-    vector<FP32> clearColor{0.0F, 0.2F, 0.4F, 1.0F};
+    vector<F32> clearColor{0.0F, 0.2F, 0.4F, 1.0F};
     CmdList->ClearRenderTargetView(currentRTV, clearColor.data(), 0, nullptr);
 
     auto viewRenderable = ECSRegistryInstance->view<ComRenderable>();

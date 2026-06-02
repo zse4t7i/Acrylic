@@ -12,8 +12,8 @@ LARGE_INTEGER TimeStampCurrent;
 LARGE_INTEGER TimeStampPrevious;
 
 // All Measured in seconds.
-FP64 TimeTotal{0.0};
-FP64 TimeDelta{0.0};
+F64 TimeTotal{0.0};
+F64 TimeDelta{0.0};
 
 U64 FrameCounter{0};
 //==============================================================================
@@ -39,27 +39,27 @@ void Update()
     QueryPerformanceCounter(&TimeStampCurrent);
 
     FrameCounter++;
-    TimeDelta = static_cast<FP64>(TimeStampCurrent.QuadPart -
-                                  TimeStampPrevious.QuadPart) /
-                static_cast<FP64>(CounterFrequency.QuadPart);
+    TimeDelta = static_cast<F64>(TimeStampCurrent.QuadPart -
+                                 TimeStampPrevious.QuadPart) /
+                static_cast<F64>(CounterFrequency.QuadPart);
     TimeTotal =
-        static_cast<FP64>(TimeStampCurrent.QuadPart - TimeStampStart.QuadPart) /
-        static_cast<FP64>(CounterFrequency.QuadPart);
+        static_cast<F64>(TimeStampCurrent.QuadPart - TimeStampStart.QuadPart) /
+        static_cast<F64>(CounterFrequency.QuadPart);
 }
 //==============================================================================
 // Accessors
 //==============================================================================
-auto GetDeltaTime() -> FP64
+auto GetDeltaTime() -> F64
 {
     return TimeDelta;
 }
-auto GetTotalTime() -> FP64
+auto GetTotalTime() -> F64
 {
     return TimeTotal;
 }
-auto GetFPS() -> FP32
+auto GetFPS() -> F32
 {
-    return TimeDelta > 0.0 ? static_cast<FP32>(1.0F / TimeDelta) : 0.0F;
+    return TimeDelta > 0.0 ? static_cast<F32>(1.0F / TimeDelta) : 0.0F;
 }
 auto GetFrameCount() -> U64
 {

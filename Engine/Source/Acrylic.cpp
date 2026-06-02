@@ -7,11 +7,13 @@ extern "C"
 {
     __declspec(dllexport) extern const UINT D3D12SDKVersion =
         D3D12_AGILITY_SDK_VERSION;
-    __declspec(dllexport) extern const char *D3D12SDKPath = "D3D12/";
+    __declspec(dllexport) extern const char* D3D12SDKPath = "D3D12/";
 }
 
-auto WINAPI wWinMain(HINSTANCE hInst, HINSTANCE /*hPrevInst*/,
-                     PWSTR /*pCmdLine*/, int nShowCmd) -> int
+auto WINAPI wWinMain(HINSTANCE hInst,
+                     HINSTANCE /*hPrevInst*/,
+                     PWSTR /*pCmdLine*/,
+                     int nShowCmd) -> int
 {
     { // Init
         Acrylic::Log::Init("Log/Acrylic.log");

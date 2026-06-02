@@ -22,10 +22,10 @@ void PresentSync();
 void PresentTear();
 // void Exit();
 
-auto GetDevice() -> ID3D12Device9 *;
-auto GetCmdQueue() -> ID3D12CommandQueue *;
-auto GetMemAllocator() -> D3D12MA::Allocator *;
-auto GetCurrentRT() -> ID3D12Resource *;
+auto GetDevice() -> ID3D12Device9*;
+auto GetCmdQueue() -> ID3D12CommandQueue*;
+auto GetMemAllocator() -> D3D12MA::Allocator*;
+auto GetCurrentRT() -> ID3D12Resource*;
 auto GetCurrentRTV() -> D3D12_CPU_DESCRIPTOR_HANDLE;
 auto GetFrameIndex() -> int;
 auto GetStrideCSU() -> U32;

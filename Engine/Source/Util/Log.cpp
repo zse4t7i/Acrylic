@@ -11,12 +11,12 @@ namespace Acrylic::Log
 //==============================================================================
 // External Variable
 //==============================================================================
-quill::Logger *AcrylicLogger{};
+quill::Logger* AcrylicLogger{};
 
 //==============================================================================
 // External Function
 //==============================================================================
-void Init(const path &logFilePath)
+void Init(const path& logFilePath)
 {
     // Start the backend thread
     quill::Backend::start();
@@ -37,7 +37,8 @@ void Init(const path &logFilePath)
 
     // Create and store the logger
     AcrylicLogger = quill::Frontend::create_or_get_logger(
-        "AcrylicLogger", std::move(fileSink),
+        "AcrylicLogger",
+        std::move(fileSink),
         quill::PatternFormatterOptions{"[%(thread_id)] %(time)"
                                        "%(log_level:^9)"
                                        //"%(short_source_location:<16)"

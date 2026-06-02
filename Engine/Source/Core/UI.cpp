@@ -18,14 +18,13 @@ constexpr int DESCIPTORCOUNT{64};
 stack<int> HeapIndices{};
 
 // External D3D12 Objects
-ID3D12Device9 *Device;
-ID3D12CommandQueue *CmdQueue;
+ID3D12Device9* Device;
+ID3D12CommandQueue* CmdQueue;
 
 // Internal D3D12 Objects
 ComPtr<ID3D12DescriptorHeap> HeapSRV{};
 ComPtr<ID3D12GraphicsCommandList6> CmdList{};
-array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT>
-    CmdAlctrs{};
+array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT> CmdAlctrs{};
 //==============================================================================
 // Internal Function
 //==============================================================================
@@ -43,7 +42,8 @@ void InitInternalD3D12Objects()
         assert(SUCCEEDED(HR) && "Failed to create CSU descriptor heap.");
     }
 
-    HR = Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+    HR = Device->CreateCommandList1(0,
+                                    D3D12_COMMAND_LIST_TYPE_DIRECT,
                                     D3D12_COMMAND_LIST_FLAG_NONE,
                                     IID_PPV_ARGS(CmdList.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create command list.");
@@ -68,15 +68,16 @@ void InitImGuiBackend()
     }
 
     ImGui_ImplDX12_InitInfo initInfo{};
-    initInfo.Device = Acrylic::D3D12::GetDevice();
-    initInfo.CommandQueue = Acrylic::D3D12::GetCmdQueue();
+    initInfo.Device            = Acrylic::D3D12::GetDevice();
+    initInfo.CommandQueue      = Acrylic::D3D12::GetCmdQueue();
     initInfo.NumFramesInFlight = Acrylic::D3D12::FRAMECOUNT;
-    initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    initInfo.DSVFormat = DXGI_FORMAT_UNKNOWN;
+    initInfo.RTVFormat         = DXGI_FORMAT_R8G8B8A8_UNORM;
+    initInfo.DSVFormat         = DXGI_FORMAT_UNKNOWN;
     initInfo.SrvDescriptorHeap = HeapSRV.Get();
     initInfo.SrvDescriptorAllocFn =
-        [](ImGui_ImplDX12_InitInfo *, D3D12_CPU_DESCRIPTOR_HANDLE *outHandleCPU,
-           D3D12_GPU_DESCRIPTOR_HANDLE *outHandleGPU) -> void {
+        [](ImGui_ImplDX12_InitInfo*,
+           D3D12_CPU_DESCRIPTOR_HANDLE* outHandleCPU,
+           D3D12_GPU_DESCRIPTOR_HANDLE* outHandleGPU) -> void {
         assert(!HeapIndices.empty() &&
                "No more descriptors available in the heap.");
 
@@ -88,7 +89,8 @@ void InitImGuiBackend()
                             (index * Acrylic::D3D12::GetStrideCSU());
     };
     initInfo.SrvDescriptorFreeFn =
-        [](ImGui_ImplDX12_InitInfo *, D3D12_CPU_DESCRIPTOR_HANDLE handleCPU,
+        [](ImGui_ImplDX12_InitInfo*,
+           D3D12_CPU_DESCRIPTOR_HANDLE handleCPU,
            D3D12_GPU_DESCRIPTOR_HANDLE handleGPU) -> void {
         int indexCPU = static_cast<int>(
             (handleCPU.ptr -
@@ -115,24 +117,26 @@ namespace Acrylic::UI
 //==============================================================================
 void Init()
 {
-    Device = Acrylic::D3D12::GetDevice();
+    Device   = Acrylic::D3D12::GetDevice();
     CmdQueue = Acrylic::D3D12::GetCmdQueue();
 
     { // Init ImGui
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
 
-        ImGuiIO &io = ImGui::GetIO();
+        ImGuiIO& io = ImGui::GetIO();
+
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.ConfigDpiScaleFonts = true;
+
+        io.ConfigDpiScaleFonts     = true;
         io.ConfigDpiScaleViewports = true;
         // io.Fonts->AddFontDefaultVector();
         io.Fonts->AddFontFromFileTTF("Font/MiSansNFP.ttf");
         io.Fonts->AddFontFromFileTTF(R"(C:\Windows\Fonts\seguivar.ttf)");
 
-        ImGuiStyle &style = ImGui::GetStyle();
+        ImGuiStyle& style  = ImGui::GetStyle();
         style.FontSizeBase = 20.0F;
 
         ImGui::StyleColorsLight();
@@ -160,7 +164,7 @@ void Update()
 
 void Render()
 {
-    auto *currentRT = Acrylic::D3D12::GetCurrentRT();
+    auto* currentRT = Acrylic::D3D12::GetCurrentRT();
     auto currentRTV = Acrylic::D3D12::GetCurrentRTV();
     auto frameIndex = Acrylic::D3D12::GetFrameIndex();
 
@@ -170,26 +174,28 @@ void Render()
     assert(SUCCEEDED(HR) && "Failed to reset command list.");
 
     auto p2r = CD3DX12_RESOURCE_BARRIER::Transition(
-        currentRT, D3D12_RESOURCE_STATE_PRESENT,
+        currentRT,
+        D3D12_RESOURCE_STATE_PRESENT,
         D3D12_RESOURCE_STATE_RENDER_TARGET);
     CmdList->ResourceBarrier(1, &p2r);
 
     CmdList->OMSetRenderTargets(1, &currentRTV, false, nullptr);
 
-    vector<ID3D12DescriptorHeap *> heaps{HeapSRV.Get()};
+    vector<ID3D12DescriptorHeap*> heaps{HeapSRV.Get()};
     CmdList->SetDescriptorHeaps(heaps.size(), heaps.data());
 
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CmdList.Get());
 
-    auto r2p = CD3DX12_RESOURCE_BARRIER::Transition(
-        currentRT, D3D12_RESOURCE_STATE_RENDER_TARGET,
-        D3D12_RESOURCE_STATE_PRESENT);
+    auto r2p =
+        CD3DX12_RESOURCE_BARRIER::Transition(currentRT,
+                                             D3D12_RESOURCE_STATE_RENDER_TARGET,
+                                             D3D12_RESOURCE_STATE_PRESENT);
     CmdList->ResourceBarrier(1, &r2p);
 
     HR = CmdList->Close();
     assert(SUCCEEDED(HR) && "Failed to close command list.");
 
-    vector<ID3D12CommandList *> cmdLists{CmdList.Get()};
+    vector<ID3D12CommandList*> cmdLists{CmdList.Get()};
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 }
 

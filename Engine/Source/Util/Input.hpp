@@ -16,21 +16,21 @@ struct InputState
     bool isMouseConnected{false};
     bool isGamepadConnected{false};
 
-    //Keyboard keys states
+    // Keyboard keys states
     vector<ButtonState> KeyboardKeys;
 
-    //Mouse buttons states
+    // Mouse buttons states
     ButtonState MouseL{};
     ButtonState MouseM{};
     ButtonState MouseR{};
     ButtonState Mouse4{};
     ButtonState Mouse5{};
     // Mouse axes states(positon and wheel delta)
-    FP32 DeltaPX{};
-    FP32 DeltaPY{};
-    FP32 DeltaWY{};
+    F32 DeltaPX{};
+    F32 DeltaPY{};
+    F32 DeltaWY{};
 
-    //Gamepad buttons states
+    // Gamepad buttons states
     ButtonState GamePadMenu{};
     ButtonState GamePadView{};
     ButtonState GamePadA{};
@@ -46,12 +46,12 @@ struct InputState
     ButtonState GamePadLS{};
     ButtonState GamePadRS{};
     // Gamepad axes states(left stick, right stick, triggers delta)
-    FP32 DeltaLT{};
-    FP32 DeltaRT{};
-    FP32 DeltaLSX{};
-    FP32 DeltaLSY{};
-    FP32 DeltaRSX{};
-    FP32 DeltaRSY{};
+    F32 DeltaLT{};
+    F32 DeltaRT{};
+    F32 DeltaLSX{};
+    F32 DeltaLSY{};
+    F32 DeltaRSX{};
+    F32 DeltaRSY{};
 };
 
 //==============================================================================

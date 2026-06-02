@@ -1,6 +1,7 @@
 #pragma once
 
 // Standard Library
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstddef>
@@ -36,6 +37,14 @@ using std::filesystem::path;
 
 using Byte = std::byte;
 
+// Integer 8
+using U8 = std::uint8_t;
+inline constexpr U8 U8_MAX{std::numeric_limits<U8>::max()};
+inline constexpr U8 U8_MIN{std::numeric_limits<U8>::min()};
+using I8 = std::int8_t;
+inline constexpr I8 I8_MAX{std::numeric_limits<I8>::max()};
+inline constexpr I8 I8_MIN{std::numeric_limits<I8>::min()};
+
 // Integer 16
 using U16 = std::uint16_t;
 inline constexpr U16 U16_MAX{std::numeric_limits<U16>::max()};
@@ -61,11 +70,10 @@ inline constexpr I64 I64_MAX{std::numeric_limits<I64>::max()};
 inline constexpr I64 I64_MIN{std::numeric_limits<I64>::min()};
 
 // Floating-point 32
-using FP32 = float;
-inline constexpr FP32 FP32_MAX{std::numeric_limits<FP32>::max()};
-inline constexpr FP32 FP32_MIN{std::numeric_limits<FP32>::min()};
+using F32 = float;
+inline constexpr F32 F32_MAX{std::numeric_limits<F32>::max()};
+inline constexpr F32 F32_MIN{std::numeric_limits<F32>::min()};
 // Floating-point 64
-using FP64 = double;
-inline constexpr FP64 FP64_MAX{std::numeric_limits<FP64>::max()};
-inline constexpr FP64 FP64_MIN{std::numeric_limits<FP64>::min()};
-
+using F64 = double;
+inline constexpr F64 F64_MAX{std::numeric_limits<F64>::max()};
+inline constexpr F64 F64_MIN{std::numeric_limits<F64>::min()};

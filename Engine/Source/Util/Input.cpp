@@ -14,7 +14,7 @@ namespace
 HRESULT HR{};
 bool BR{};
 
-FP32 DeadZone{0.2F};
+F32 DeadZone{0.2F};
 
 ComPtr<IGameInput> GI{};
 Acrylic::Input::InputState State{};
@@ -247,12 +247,12 @@ void UpdateMouseState()
         currReadingMouse->GetMouseState(&currMouseState);
 
         // Update the state of mouse axes.
-        State.DeltaPX = static_cast<FP32>(currMouseState.positionX -
-                                          prevMouseState.positionX);
-        State.DeltaPY = static_cast<FP32>(currMouseState.positionY -
-                                          prevMouseState.positionY);
+        State.DeltaPX = static_cast<F32>(currMouseState.positionX -
+                                         prevMouseState.positionX);
+        State.DeltaPY = static_cast<F32>(currMouseState.positionY -
+                                         prevMouseState.positionY);
         State.DeltaWY =
-            static_cast<FP32>(currMouseState.wheelY - prevMouseState.wheelY);
+            static_cast<F32>(currMouseState.wheelY - prevMouseState.wheelY);
 
         // Update the state of mouse buttons.
         UpdateButtonState(State.MouseL,

@@ -33,28 +33,36 @@ void Init(HINSTANCE hInst)
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     WNDCLASSEXW wcex{};
-    wcex.cbSize = sizeof(WNDCLASSEXW);
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInst;
-    wcex.hIcon = LoadIconW(hInst, IDI_APPLICATION);
-    wcex.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+    wcex.cbSize        = sizeof(WNDCLASSEXW);
+    wcex.style         = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc   = WndProc;
+    wcex.cbClsExtra    = 0;
+    wcex.cbWndExtra    = 0;
+    wcex.hInstance     = hInst;
+    wcex.hIcon         = LoadIconW(hInst, IDI_APPLICATION);
+    wcex.hCursor       = LoadCursorW(nullptr, IDC_ARROW);
     wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-    wcex.lpszMenuName = nullptr;
+    wcex.lpszMenuName  = nullptr;
     wcex.lpszClassName = L"AcrylicMainWindowClass";
-    wcex.hIconSm = LoadIconW(hInst, IDI_APPLICATION);
+    wcex.hIconSm       = LoadIconW(hInst, IDI_APPLICATION);
     RegisterClassExW(&wcex);
 
     RECT rc{0, 0, Width, Height};
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, false);
 
     // Create a window.
-    HWnd = CreateWindowExW(0, L"AcrylicMainWindowClass", L"Acrylic",
-                           WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
-                           rc.right - rc.left, rc.bottom - rc.top, nullptr,
-                           nullptr, hInst, nullptr);
+    HWnd = CreateWindowExW(0,
+                           L"AcrylicMainWindowClass",
+                           L"Acrylic",
+                           WS_OVERLAPPEDWINDOW,
+                           CW_USEDEFAULT,
+                           CW_USEDEFAULT,
+                           rc.right - rc.left,
+                           rc.bottom - rc.top,
+                           nullptr,
+                           nullptr,
+                           hInst,
+                           nullptr);
 
     LOG_INFO("Acrylic::Window::Init() succeeded.");
 }

@@ -54,11 +54,13 @@ void InitGraphicsPipeline()
     assert(SUCCEEDED(HR) && "Failed to create DXGI factory.");
 
     HR = Factory->EnumAdapterByGpuPreference(
-        0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
+        0,
+        DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
         IID_PPV_ARGS(Adapter.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to find a dGPU.");
 
-    HR = D3D12CreateDevice(Adapter.Get(), D3D_FEATURE_LEVEL_12_1,
+    HR = D3D12CreateDevice(Adapter.Get(),
+                           D3D_FEATURE_LEVEL_12_1,
                            IID_PPV_ARGS(Device.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to find a dGPU that supports D3D12 "
                             "Feature Level 12_1.");
@@ -76,7 +78,7 @@ void InitGraphicsPipeline()
             D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE};
 
         D3D12_INFO_QUEUE_FILTER filter{};
-        filter.DenyList.NumIDs = denyIds.size();
+        filter.DenyList.NumIDs  = denyIds.size();
         filter.DenyList.pIDList = denyIds.data();
 
         infoQueue->AddStorageFilterEntries(&filter);
@@ -86,7 +88,7 @@ void InitGraphicsPipeline()
     { // Create CmdQueue.
         D3D12_COMMAND_QUEUE_DESC descCQ{};
         descCQ.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-        descCQ.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        descCQ.Type  = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
         HR = Device->CreateCommandQueue(&descCQ,
                                         IID_PPV_ARGS(CmdQueue.GetAddressOf()));
@@ -98,21 +100,24 @@ void InitSwapChain()
 {
     { // Create SwapChain.
         DXGI_SWAP_CHAIN_DESC1 descSwapChain{};
-        descSwapChain.BufferCount = Acrylic::D3D12::BUFFERCOUNT;
-        descSwapChain.Width = Acrylic::Window::GetWidth();
-        descSwapChain.Height = Acrylic::Window::GetHeight();
-        descSwapChain.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        descSwapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        descSwapChain.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        descSwapChain.BufferCount      = Acrylic::D3D12::BUFFERCOUNT;
+        descSwapChain.Width            = Acrylic::Window::GetWidth();
+        descSwapChain.Height           = Acrylic::Window::GetHeight();
+        descSwapChain.Format           = DXGI_FORMAT_R8G8B8A8_UNORM;
+        descSwapChain.BufferUsage      = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        descSwapChain.SwapEffect       = DXGI_SWAP_EFFECT_FLIP_DISCARD;
         descSwapChain.SampleDesc.Count = 1;
         descSwapChain.Flags =
             DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING |
             DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
         ComPtr<IDXGISwapChain1> swapChain{};
-        HR = Factory->CreateSwapChainForHwnd(
-            CmdQueue.Get(), Acrylic::Window::GetHWnd(), &descSwapChain, nullptr,
-            nullptr, swapChain.GetAddressOf());
+        HR = Factory->CreateSwapChainForHwnd(CmdQueue.Get(),
+                                             Acrylic::Window::GetHWnd(),
+                                             &descSwapChain,
+                                             nullptr,
+                                             nullptr,
+                                             swapChain.GetAddressOf());
         assert(SUCCEEDED(HR) && "Failed to create swap chain.");
         HR = swapChain.As(&SwapChain);
         assert(SUCCEEDED(HR) && "Failed to query IDXGISwapChain4.");
@@ -128,8 +133,8 @@ void InitSwapChain()
     { // Create RTs and RTV
         D3D12_DESCRIPTOR_HEAP_DESC descHeapRTV{};
         descHeapRTV.NumDescriptors = Acrylic::D3D12::BUFFERCOUNT;
-        descHeapRTV.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        descHeapRTV.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        descHeapRTV.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        descHeapRTV.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
         HR = Device->CreateDescriptorHeap(&descHeapRTV,
                                           IID_PPV_ARGS(HeapRTV.GetAddressOf()));
@@ -151,7 +156,8 @@ void InitSwapChain()
     }
 
     HR = Acrylic::D3D12::GetDevice()->CreateFence(
-        FrameFVs[FrameIndex]++, D3D12_FENCE_FLAG_NONE,
+        FrameFVs[FrameIndex]++,
+        D3D12_FENCE_FLAG_NONE,
         IID_PPV_ARGS(FrameFence.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create fence.");
 
@@ -162,8 +168,8 @@ void InitSwapChain()
 void InitD3D12MA()
 {
     D3D12MA::ALLOCATOR_DESC descD3D12MA{};
-    descD3D12MA.Flags = D3D12MA_RECOMMENDED_ALLOCATOR_FLAGS;
-    descD3D12MA.pDevice = Device.Get();
+    descD3D12MA.Flags    = D3D12MA_RECOMMENDED_ALLOCATOR_FLAGS;
+    descD3D12MA.pDevice  = Device.Get();
     descD3D12MA.pAdapter = Adapter.Get();
 
     HR = D3D12MA::CreateAllocator(&descD3D12MA, MemAlctr.GetAddressOf());
@@ -253,8 +259,10 @@ void Resize()
     // Resize SwapChain buffers.
     DXGI_SWAP_CHAIN_DESC1 desc{};
     SwapChain->GetDesc1(&desc);
-    HR = SwapChain->ResizeBuffers(BUFFERCOUNT, Acrylic::Window::GetWidth(),
-                                  Acrylic::Window::GetHeight(), desc.Format,
+    HR = SwapChain->ResizeBuffers(BUFFERCOUNT,
+                                  Acrylic::Window::GetWidth(),
+                                  Acrylic::Window::GetHeight(),
+                                  desc.Format,
                                   desc.Flags);
     assert(SUCCEEDED(HR) && "Failed to resize SwapChain buffers.");
 
@@ -295,19 +303,19 @@ void PresentTear()
 //==============================================================================
 // Accessors
 //==============================================================================
-auto GetDevice() -> ID3D12Device9 *
+auto GetDevice() -> ID3D12Device9*
 {
     return Device.Get();
 }
-auto GetCmdQueue() -> ID3D12CommandQueue *
+auto GetCmdQueue() -> ID3D12CommandQueue*
 {
     return CmdQueue.Get();
 }
-auto GetMemAllocator() -> D3D12MA::Allocator *
+auto GetMemAllocator() -> D3D12MA::Allocator*
 {
     return MemAlctr.Get();
 }
-auto GetCurrentRT() -> ID3D12Resource *
+auto GetCurrentRT() -> ID3D12Resource*
 {
     return RTs[SwapChain->GetCurrentBackBufferIndex()].Get();
 }
@@ -315,7 +323,8 @@ auto GetCurrentRTV() -> D3D12_CPU_DESCRIPTOR_HANDLE
 {
     return CD3DX12_CPU_DESCRIPTOR_HANDLE{
         HeapRTV->GetCPUDescriptorHandleForHeapStart(),
-        static_cast<int>(SwapChain->GetCurrentBackBufferIndex()), StrideRTV};
+        static_cast<int>(SwapChain->GetCurrentBackBufferIndex()),
+        StrideRTV};
 }
 auto GetFrameIndex() -> int
 {
