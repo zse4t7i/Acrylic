@@ -16,14 +16,14 @@ quill::Logger* AcrylicLogger{};
 //==============================================================================
 // External Function
 //==============================================================================
-void Init(const path& logFilePath)
+void Init(const path& logPath)
 {
     // Start the backend thread
     quill::Backend::start();
 
     // Setup sink and logger
     auto fileSink = quill::Frontend::create_or_get_sink<quill::FileSink>(
-        logFilePath.string(),
+        logPath.string(),
         []() -> quill::FileSinkConfig {
             quill::FileSinkConfig cfg;
             cfg.set_open_mode('w');
