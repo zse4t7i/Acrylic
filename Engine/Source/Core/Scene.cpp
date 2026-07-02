@@ -1,6 +1,8 @@
 #include "Scene.hpp"
+#include "ECS.hpp"
 
 using namespace DirectX;
+using namespace Acrylic::ECS;
 
 #pragma region Internal
 namespace
@@ -8,114 +10,16 @@ namespace
 //==============================================================================
 // Internal Variable
 //==============================================================================
-struct MemoryAlloc
+
+struct ConstantObject
 {
-    vector<Byte> AllocCPU;
-    ComPtr<D3D12MA::Allocation> AllocDefault;
-    ComPtr<D3D12MA::Allocation> AllocUpload;
-    int DescriptorHeapOffset{};
+    XMFLOAT4X4 MatrixW{};
 };
 
-struct MemoryMesh
+struct ConstantFrame
 {
-    MemoryAlloc VertexBuffer{};
-    D3D12_VERTEX_BUFFER_VIEW VBV{};
-    MemoryAlloc IndexBuffer{};
-    D3D12_INDEX_BUFFER_VIEW IBV{};
-};
-
-struct MemoryMaterial
-{
-    // int TextureWidth{};
-    // int TextureHeight{};
-    MemoryAlloc ShaderVertex{};
-    MemoryAlloc ShaderPixel{};
-    optional<MemoryAlloc> TexBaseColor;
-    optional<MemoryAlloc> TexNormal;
-    optional<MemoryAlloc> TexARM;
-    optional<MemoryAlloc> TexEmissive;
-};
-
-struct DiskView
-{
-    path Path{};
-    U32 Offset{0};
-    U32 Length{0};
-    // When Length==0, it means from Offset to the end of the file.
-};
-
-struct DiskMesh
-{
-    DiskView VertexBuffer{};
-    DiskView IndexBuffer{};
-};
-
-struct DiskMaterial
-{
-    DiskView ShaderVertex{};
-    DiskView ShaderPixel{};
-    optional<DiskView> TexBaseColor;
-    optional<DiskView> TexNormal;
-    optional<DiskView> TexARM;
-    optional<DiskView> TexEmissive;
-};
-
-struct ComTag
-{
-    string Name;
-};
-
-struct ComRenderable
-{
-    XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
-    XMFLOAT3 Rotation{0.0F, 0.0F, 0.0F};
-    XMFLOAT3 Scale{1.0F, 1.0F, 1.0F};
-    vector<U32> MeshIndices;
-    vector<U32> MaterialIndices;
-};
-
-struct ComLight
-{
-    XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
-    XMFLOAT4 Color{1.0F, 1.0F, 1.0F, 1.0F};
-    F32 Intensity{1.0F};
-};
-
-struct ComCamera
-{
-    XMFLOAT3 Position{0.0F, 0.0F, 0.0F};
-    XMFLOAT3 Direction{-1.0F, -1.0F, -1.0F};
-    F32 FOV{45.0F};
-    F32 AspectRatio{16.0F / 9.0F};
-    F32 PlaneNear{0.1F};
-    F32 PlaneFar{1000.0F};
-};
-
-struct Entity
-{
-    ComTag Tag;
-
-    optional<ComRenderable> Renderable;
-    optional<ComLight> Light;
-    optional<ComCamera> Camera;
-};
-
-struct Scene
-{
-    string Name;
-
-    vector<U32> EntityIndices;
-};
-
-struct Project
-{
-    string Name;
-    int ActiveSceneIndex{0};
-
-    vector<Scene> Scenes;
-    vector<Entity> Entities;
-    vector<DiskMesh> DiskMeshes;
-    vector<DiskMaterial> DiskMaterials;
+    XMFLOAT4X4 MatrixVP{};
+    XMFLOAT4 LightColor{};
 };
 
 struct ConstantBuffer
@@ -132,12 +36,6 @@ bool BR{};
 ID3D12Device9* Device;
 ID3D12CommandQueue* CmdQueue;
 D3D12MA::Allocator* MemAlctr;
-
-unique_ptr<Project> ProjectInstance{};
-unique_ptr<entt::registry> ECSRegistryInstance{};
-
-vector<MemoryMesh> MemoryMeshes{};
-vector<MemoryMaterial> MemoryMaterials{};
 
 // Internal D3D12 Objects
 ComPtr<ID3D12RootSignature> RS{};
@@ -179,38 +77,9 @@ void InitInternalD3D12Objects()
     }
 }
 
-void BuildDefaultScene()
-{
-    ProjectInstance = std::make_unique<Project>(Project{
-        .Name{"PerspectiveProject"},
-        .Scenes{Scene{.Name{"HelloAcrylic"}, .EntityIndices{0, 1, 2}}},
-        .Entities{
-            Entity{.Tag{.Name{"Cube"}},
-                   .Renderable{
-                       ComRenderable{.MeshIndices{0}, .MaterialIndices{0}}}},
-            Entity{.Tag{.Name{"Light"}}, .Light{{.Position{4.0F, 4.0F, 4.0F}}}},
-            Entity{.Tag{.Name{"Camera"}},
-                   .Camera{{.Position{2.0F, 2.0F, 2.0F}}}}},
-        .DiskMeshes{DiskMesh{
-            .VertexBuffer{.Path{"Mesh/Cube.bin"}, .Offset{0}, .Length{480}},
-            .IndexBuffer{
-                .Path{"Mesh/Cube.bin"},
-                .Offset{480},
-                .Length{72},
-            }}},
-        .DiskMaterials{DiskMaterial{
-            .ShaderVertex{.Path{"Shader/Cube.vs.bin"}, .Offset{0}, .Length{0}},
-            .ShaderPixel{.Path{"Shader/Cube.ps.bin"}, .Offset{0}, .Length{0}},
-            .TexBaseColor{
-                {.Path{"Texture/Metal_BaseColor.png"}, .Offset{0}, .Length{0}}},
-            .TexNormal{
-                {.Path{"Texture/Metal_Normal.png"}, .Offset{0}, .Length{0}}},
-            .TexARM{
-                {.Path{"Texture/Metal_ARM.png"}, .Offset{0}, .Length{0}}}}}});
-}
-
 void InitScene()
 {
+    // TODO: Temporary implementation for testing.
     BuildDefaultScene();
 }
 
@@ -656,7 +525,7 @@ namespace Acrylic::Scene
 void Init()
 {
     Device   = Acrylic::D3D12::GetDevice();
-    MemAlctr = Acrylic::D3D12::GetMemAllocator();
+    MemAlctr = Acrylic::D3D12::GetAlctrGPU();
     CmdQueue = Acrylic::D3D12::GetCmdQueue();
 
     InitInternalD3D12Objects();

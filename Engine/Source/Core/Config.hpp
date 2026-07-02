@@ -5,6 +5,6 @@ namespace Acrylic::Config
 //==============================================================================
 // External Function
 //==============================================================================
-void Load(const path& configPath);
-void Save(const path& configPath);
+void Load(const Path& configPath);
+void Save(const Path& configPath);
 } // namespace Acrylic::Config

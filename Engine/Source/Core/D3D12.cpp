@@ -13,7 +13,7 @@ ComPtr<IDXGIFactory6> Factory{};
 ComPtr<IDXGIAdapter4> Adapter{};
 ComPtr<ID3D12Device9> Device{};
 ComPtr<ID3D12CommandQueue> CmdQueue{};
-ComPtr<D3D12MA::Allocator> MemAlctr{};
+ComPtr<D3D12MA::Allocator> AlctrGPU{};
 
 // D3D12 Properties
 string GPUName{};
@@ -172,7 +172,7 @@ void InitD3D12MA()
     descD3D12MA.pDevice  = Device.Get();
     descD3D12MA.pAdapter = Adapter.Get();
 
-    HR = D3D12MA::CreateAllocator(&descD3D12MA, MemAlctr.GetAddressOf());
+    HR = D3D12MA::CreateAllocator(&descD3D12MA, AlctrGPU.GetAddressOf());
     assert(SUCCEEDED(HR) && "Failed to create D3D12 Memory Allocator.");
 }
 
@@ -311,9 +311,9 @@ auto GetCmdQueue() -> ID3D12CommandQueue*
 {
     return CmdQueue.Get();
 }
-auto GetMemAllocator() -> D3D12MA::Allocator*
+auto GetAlctrGPU() -> D3D12MA::Allocator*
 {
-    return MemAlctr.Get();
+    return AlctrGPU.Get();
 }
 auto GetCurrentRT() -> ID3D12Resource*
 {

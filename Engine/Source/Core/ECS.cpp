@@ -1,4 +1,4 @@
-#include "Config.hpp"
+#include "ECS.hpp"
 
 #pragma region Internal
 namespace
@@ -18,19 +18,17 @@ bool BR{};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Config
+namespace Acrylic::ECS
 {
 //==============================================================================
 // External Function
 //==============================================================================
-void Load(const path& configPath)
+void Init()
 {
-    LOG_INFO("Acrylic::Config::Load() succeeded.");
+    auto& registry = GetRegistry();
+
+    LOG_INFO("Acrylic::ECS::Init() succeeded.");
 }
 
-void Save(const path& configPath)
-{
-    LOG_INFO("Acrylic::Config::Save() succeeded.");
-}
-} // namespace Acrylic::Config
+} // namespace Acrylic::ECS
 #pragma endregion

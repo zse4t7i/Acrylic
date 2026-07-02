@@ -21,7 +21,9 @@ Checks: '
   -readability-implicit-bool-conversion,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -cppcoreguidelines-pro-type-reinterpret-cast,
-  
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -modernize-use-nodiscard,
 '
 
 WarningsAsErrors: '-*'

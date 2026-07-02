@@ -55,6 +55,9 @@
 #include <unordered_set>
 #include <vector>
 
+using DirectX::XMFLOAT3;
+using DirectX::XMFLOAT4;
+using DirectX::XMFLOAT4X4;
 using Microsoft::WRL::ComPtr;
 using std::array;
 using std::ifstream;
@@ -70,9 +73,9 @@ using std::unordered_set;
 using std::vector;
 using std::wstring;
 using std::wstring_view;
-using std::filesystem::path;
 
 using Byte = std::byte;
+using Path = std::filesystem::path;
 using JSON = nlohmann::json;
 
 // Integer 8
@@ -121,5 +124,6 @@ inline constexpr F64 F64_MIN{std::numeric_limits<F64>::min()};
 #include "Input.hpp"
 #include "Log.hpp"
 #include "Timer.hpp"
+#include "State.hpp"
 #include "Util.hpp"
 #include "Window.hpp"

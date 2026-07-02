@@ -16,7 +16,7 @@ quill::Logger* AcrylicLogger{};
 //==============================================================================
 // External Function
 //==============================================================================
-void Init(const path& logPath)
+void Init(const Path& logPath)
 {
     // Start the backend thread
     quill::Backend::start();

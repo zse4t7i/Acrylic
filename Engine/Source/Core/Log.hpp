@@ -24,6 +24,6 @@ extern quill::Logger* AcrylicLogger;
 //==============================================================================
 // External Function
 //==============================================================================
-void Init(const path& logPath);
+void Init(const Path& logPath);
 void Flush();
 } // namespace Acrylic::Log
