@@ -70,7 +70,7 @@ void InitInternalD3D12Objects()
 
     for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; i++)
     {
-        HR = Acrylic::D3D12::GetDevice()->CreateCommandAllocator(
+        HR = Acrylic::D3D12::GetPtrDevice()->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,
             IID_PPV_ARGS(CmdAlctrs[i].GetAddressOf()));
         assert(SUCCEEDED(HR) && "Failed to create command allocator.");
@@ -524,9 +524,9 @@ namespace Acrylic::Scene
 //==============================================================================
 void Init()
 {
-    Device   = Acrylic::D3D12::GetDevice();
-    MemAlctr = Acrylic::D3D12::GetAlctrGPU();
-    CmdQueue = Acrylic::D3D12::GetCmdQueue();
+    Device   = Acrylic::D3D12::GetPtrDevice();
+    MemAlctr = Acrylic::D3D12::GetPtrAlctrGPU();
+    CmdQueue = Acrylic::D3D12::GetPtrCmdQueue();
 
     InitInternalD3D12Objects();
 
@@ -671,7 +671,7 @@ void Update()
 
 void Render()
 {
-    auto* currentRT = Acrylic::D3D12::GetCurrentRT();
+    auto* currentRT = Acrylic::D3D12::GetPtrCurrentRT();
     auto currentRTV = Acrylic::D3D12::GetCurrentRTV();
     auto frameIndex = Acrylic::D3D12::GetFrameIndex();
 

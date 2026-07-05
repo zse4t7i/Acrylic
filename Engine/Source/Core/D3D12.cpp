@@ -155,7 +155,7 @@ void InitSwapChain()
         }
     }
 
-    HR = Acrylic::D3D12::GetDevice()->CreateFence(
+    HR = Acrylic::D3D12::GetPtrDevice()->CreateFence(
         FrameFVs[FrameIndex]++,
         D3D12_FENCE_FLAG_NONE,
         IID_PPV_ARGS(FrameFence.GetAddressOf()));
@@ -215,8 +215,8 @@ void WaitForBufferAvailable()
 
 void WaitForCmdExecuted()
 {
-    HR = Acrylic::D3D12::GetCmdQueue()->Signal(FrameFence.Get(),
-                                               FrameFVs[FrameIndex]);
+    HR = Acrylic::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(),
+                                                  FrameFVs[FrameIndex]);
     assert(SUCCEEDED(HR) && "Failed to signal command queue.");
 
     HR = FrameFence->SetEventOnCompletion(FrameFVs[FrameIndex]++,
@@ -229,7 +229,7 @@ void WaitForFrameAvailable()
 {
     const auto currentFV = FrameFVs[FrameIndex];
 
-    HR = Acrylic::D3D12::GetCmdQueue()->Signal(FrameFence.Get(), currentFV);
+    HR = Acrylic::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(), currentFV);
     assert(SUCCEEDED(HR) && "Failed to signal command queue.");
 
     FrameIndex = (FrameIndex + 1) % FRAMECOUNT;
@@ -303,19 +303,19 @@ void PresentTear()
 //==============================================================================
 // Accessors
 //==============================================================================
-auto GetDevice() -> ID3D12Device9*
+auto GetPtrDevice() -> ID3D12Device9*
 {
     return Device.Get();
 }
-auto GetCmdQueue() -> ID3D12CommandQueue*
+auto GetPtrCmdQueue() -> ID3D12CommandQueue*
 {
     return CmdQueue.Get();
 }
-auto GetAlctrGPU() -> D3D12MA::Allocator*
+auto GetPtrAlctrGPU() -> D3D12MA::Allocator*
 {
     return AlctrGPU.Get();
 }
-auto GetCurrentRT() -> ID3D12Resource*
+auto GetPtrCurrentRT() -> ID3D12Resource*
 {
     return RTs[SwapChain->GetCurrentBackBufferIndex()].Get();
 }

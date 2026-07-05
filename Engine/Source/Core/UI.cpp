@@ -50,7 +50,7 @@ void InitInternalD3D12Objects()
 
     for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; i++)
     {
-        HR = Acrylic::D3D12::GetDevice()->CreateCommandAllocator(
+        HR = Acrylic::D3D12::GetPtrDevice()->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,
             IID_PPV_ARGS(CmdAlctrs[i].GetAddressOf()));
         assert(SUCCEEDED(HR) && "Failed to create command allocator.");
@@ -68,8 +68,8 @@ void InitImGuiBackend()
     }
 
     ImGui_ImplDX12_InitInfo initInfo{};
-    initInfo.Device            = Acrylic::D3D12::GetDevice();
-    initInfo.CommandQueue      = Acrylic::D3D12::GetCmdQueue();
+    initInfo.Device            = Acrylic::D3D12::GetPtrDevice();
+    initInfo.CommandQueue      = Acrylic::D3D12::GetPtrCmdQueue();
     initInfo.NumFramesInFlight = Acrylic::D3D12::FRAMECOUNT;
     initInfo.RTVFormat         = DXGI_FORMAT_R8G8B8A8_UNORM;
     initInfo.DSVFormat         = DXGI_FORMAT_UNKNOWN;
@@ -117,8 +117,8 @@ namespace Acrylic::UI
 //==============================================================================
 void Init()
 {
-    Device   = Acrylic::D3D12::GetDevice();
-    CmdQueue = Acrylic::D3D12::GetCmdQueue();
+    Device   = Acrylic::D3D12::GetPtrDevice();
+    CmdQueue = Acrylic::D3D12::GetPtrCmdQueue();
 
     { // Init ImGui
         IMGUI_CHECKVERSION();
@@ -164,7 +164,7 @@ void Update()
 
 void Render()
 {
-    auto* currentRT = Acrylic::D3D12::GetCurrentRT();
+    auto* currentRT = Acrylic::D3D12::GetPtrCurrentRT();
     auto currentRTV = Acrylic::D3D12::GetCurrentRTV();
     auto frameIndex = Acrylic::D3D12::GetFrameIndex();
 

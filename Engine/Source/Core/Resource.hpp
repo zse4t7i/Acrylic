@@ -18,7 +18,7 @@ struct AllocTexture
 {
     ComPtr<D3D12MA::Allocation> AllocSR;
 
-    U32 DescriptorPoolIndex{};
+    U32 DescriptorIndex{};
     U32 TextureWidth{};
     U32 TextureHeight{};
 };
