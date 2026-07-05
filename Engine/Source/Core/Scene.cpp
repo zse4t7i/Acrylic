@@ -35,7 +35,7 @@ bool BR{};
 // External D3D12 Objects
 ID3D12Device9* Device;
 ID3D12CommandQueue* CmdQueue;
-D3D12MA::Allocator* MemAlctr;
+D3D12MA::Allocator* AlctrGPU;
 
 // Internal D3D12 Objects
 ComPtr<ID3D12RootSignature> RS{};
@@ -493,7 +493,7 @@ void CreateCB()
         D3D12MA::ALLOCATION_FLAG_STRATEGY_MIN_MEMORY};
     CD3DX12_RESOURCE_DESC descRes = CD3DX12_RESOURCE_DESC::Buffer(sizeCB);
 
-    HR = MemAlctr->CreateResource(&descUpload,
+    HR = AlctrGPU->CreateResource(&descUpload,
                                   &descRes,
                                   D3D12_RESOURCE_STATE_GENERIC_READ,
                                   nullptr,
@@ -525,7 +525,7 @@ namespace Acrylic::Scene
 void Init()
 {
     Device   = Acrylic::D3D12::GetPtrDevice();
-    MemAlctr = Acrylic::D3D12::GetPtrAlctrGPU();
+    AlctrGPU = Acrylic::D3D12::GetPtrAlctrGPU();
     CmdQueue = Acrylic::D3D12::GetPtrCmdQueue();
 
     InitInternalD3D12Objects();

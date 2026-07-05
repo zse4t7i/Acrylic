@@ -35,7 +35,7 @@ array<U64, Acrylic::D3D12::FRAMECOUNT> FrameFVs{0, 0};
 //==============================================================================
 // Internal Function
 //==============================================================================
-void InitGraphicsPipeline()
+void InitGraphicsEngine()
 {
     ComPtr<ID3D12Debug5> debugLayer{};
     ComPtr<ID3D12InfoQueue> infoQueue{};
@@ -86,11 +86,10 @@ void InitGraphicsPipeline()
     }
 
     { // Create CmdQueue.
-        D3D12_COMMAND_QUEUE_DESC descCQ{};
-        descCQ.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-        descCQ.Type  = D3D12_COMMAND_LIST_TYPE_DIRECT;
+        D3D12_COMMAND_QUEUE_DESC descQueue{
+            .Type{D3D12_COMMAND_LIST_TYPE_DIRECT}};
 
-        HR = Device->CreateCommandQueue(&descCQ,
+        HR = Device->CreateCommandQueue(&descQueue,
                                         IID_PPV_ARGS(CmdQueue.GetAddressOf()));
         assert(SUCCEEDED(HR) && "Failed to create command queue.");
     }
@@ -199,7 +198,7 @@ namespace Acrylic::D3D12
 {
 void Init()
 {
-    InitGraphicsPipeline();
+    InitGraphicsEngine();
     InitSwapChain();
     InitD3D12MA();
 
