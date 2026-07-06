@@ -50,7 +50,7 @@ struct ComCamera
 //==============================================================================
 void Init();
 
-inline auto GetRegistry() -> entt::registry&
+inline auto GetRefRegistry() -> entt::registry&
 {
     static entt::registry Registry{};
     return Registry;

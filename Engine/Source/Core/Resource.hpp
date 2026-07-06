@@ -5,22 +5,25 @@ namespace Acrylic::Resource
 //==============================================================================
 // External Struct
 //==============================================================================
+struct AllocBuffer
+{
+    ComPtr<D3D12MA::Allocation> AllocGPU;
+};
+
 struct AllocMesh
 {
-    ComPtr<D3D12MA::Allocation> AllocVB;
+    AllocBuffer VB;
     D3D12_VERTEX_BUFFER_VIEW VBV{};
 
-    ComPtr<D3D12MA::Allocation> AllocIB;
+    AllocBuffer IB;
     D3D12_INDEX_BUFFER_VIEW IBV{};
 };
 
 struct AllocTexture
 {
-    ComPtr<D3D12MA::Allocation> AllocSR;
+    ComPtr<D3D12MA::Allocation> AllocGPU;
 
     U32 DescriptorIndex{};
-    U32 TextureWidth{};
-    U32 TextureHeight{};
 };
 
 struct AllocMaterial
@@ -35,6 +38,9 @@ struct AllocMaterial
 // External Function
 //==============================================================================
 void Init();
+void BeginAllocate();
+void AllocateAll(Acrylic::DescriptorPoolCSU& poolSRV);
+auto EndAllocate() -> future<void>;
 
 inline auto GetRefAllocMeshes() -> vector<AllocMesh>&
 {

@@ -154,10 +154,9 @@ void InitSwapChain()
         }
     }
 
-    HR = Acrylic::D3D12::GetPtrDevice()->CreateFence(
-        FrameFVs[FrameIndex]++,
-        D3D12_FENCE_FLAG_NONE,
-        IID_PPV_ARGS(FrameFence.GetAddressOf()));
+    HR = Device->CreateFence(FrameFVs[FrameIndex]++,
+                             D3D12_FENCE_FLAG_NONE,
+                             IID_PPV_ARGS(FrameFence.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create fence.");
 
     EventCmdExecuted = CreateEventW(nullptr, false, false, nullptr);

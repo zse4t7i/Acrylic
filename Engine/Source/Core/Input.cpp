@@ -17,7 +17,7 @@ bool BR{};
 F32 DeadZone{0.2F};
 
 ComPtr<IGameInput> GI{};
-Acrylic::Input::InputState State{};
+Acrylic::Input::InputState IOState{};
 
 vector<U8> ConcernedVirtualKeys{};
 
@@ -50,11 +50,11 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         if (deviceKind & GameInputKindKeyboard)
         {
             { // Reset the input state
-                std::ranges::fill(State.KeyboardKeys,
+                std::ranges::fill(IOState.KeyboardKeys,
                                   Acrylic::Input::ButtonState::None);
             }
 
-            State.isKeyboardConnected = true;
+            IOState.isKeyboardConnected = true;
             HR = GI->GetCurrentReading(GameInputKindKeyboard,
                                        nullptr,
                                        PrevReadingKeyboard.GetAddressOf());
@@ -65,18 +65,18 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         else if (deviceKind & GameInputKindMouse)
         {
             { // Reset the input state
-                State.MouseL = Acrylic::Input::ButtonState::None;
-                State.MouseM = Acrylic::Input::ButtonState::None;
-                State.MouseR = Acrylic::Input::ButtonState::None;
-                State.Mouse4 = Acrylic::Input::ButtonState::None;
-                State.Mouse5 = Acrylic::Input::ButtonState::None;
+                IOState.MouseL = Acrylic::Input::ButtonState::None;
+                IOState.MouseM = Acrylic::Input::ButtonState::None;
+                IOState.MouseR = Acrylic::Input::ButtonState::None;
+                IOState.Mouse4 = Acrylic::Input::ButtonState::None;
+                IOState.Mouse5 = Acrylic::Input::ButtonState::None;
 
-                State.DeltaPX = 0.0F;
-                State.DeltaPY = 0.0F;
-                State.DeltaWY = 0.0F;
+                IOState.DeltaPX = 0.0F;
+                IOState.DeltaPY = 0.0F;
+                IOState.DeltaWY = 0.0F;
             }
 
-            State.isMouseConnected = true;
+            IOState.isMouseConnected = true;
             HR = GI->GetCurrentReading(GameInputKindMouse,
                                        nullptr,
                                        PrevReadingMouse.GetAddressOf());
@@ -87,30 +87,30 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         else if (deviceKind & GameInputKindGamepad)
         {
             { // Reset the input state
-                State.GamePadMenu      = Acrylic::Input::ButtonState::None;
-                State.GamePadView      = Acrylic::Input::ButtonState::None;
-                State.GamePadA         = Acrylic::Input::ButtonState::None;
-                State.GamePadB         = Acrylic::Input::ButtonState::None;
-                State.GamePadX         = Acrylic::Input::ButtonState::None;
-                State.GamePadY         = Acrylic::Input::ButtonState::None;
-                State.GamePadDPadUp    = Acrylic::Input::ButtonState::None;
-                State.GamePadDPadDown  = Acrylic::Input::ButtonState::None;
-                State.GamePadDPadLeft  = Acrylic::Input::ButtonState::None;
-                State.GamePadDPadRight = Acrylic::Input::ButtonState::None;
-                State.GamePadLB        = Acrylic::Input::ButtonState::None;
-                State.GamePadRB        = Acrylic::Input::ButtonState::None;
-                State.GamePadLS        = Acrylic::Input::ButtonState::None;
-                State.GamePadRS        = Acrylic::Input::ButtonState::None;
+                IOState.GamePadMenu      = Acrylic::Input::ButtonState::None;
+                IOState.GamePadView      = Acrylic::Input::ButtonState::None;
+                IOState.GamePadA         = Acrylic::Input::ButtonState::None;
+                IOState.GamePadB         = Acrylic::Input::ButtonState::None;
+                IOState.GamePadX         = Acrylic::Input::ButtonState::None;
+                IOState.GamePadY         = Acrylic::Input::ButtonState::None;
+                IOState.GamePadDPadUp    = Acrylic::Input::ButtonState::None;
+                IOState.GamePadDPadDown  = Acrylic::Input::ButtonState::None;
+                IOState.GamePadDPadLeft  = Acrylic::Input::ButtonState::None;
+                IOState.GamePadDPadRight = Acrylic::Input::ButtonState::None;
+                IOState.GamePadLB        = Acrylic::Input::ButtonState::None;
+                IOState.GamePadRB        = Acrylic::Input::ButtonState::None;
+                IOState.GamePadLS        = Acrylic::Input::ButtonState::None;
+                IOState.GamePadRS        = Acrylic::Input::ButtonState::None;
 
-                State.DeltaLT  = 0.0F;
-                State.DeltaRT  = 0.0F;
-                State.DeltaLSX = 0.0F;
-                State.DeltaLSY = 0.0F;
-                State.DeltaRSX = 0.0F;
-                State.DeltaRSY = 0.0F;
+                IOState.DeltaLT  = 0.0F;
+                IOState.DeltaRT  = 0.0F;
+                IOState.DeltaLSX = 0.0F;
+                IOState.DeltaLSY = 0.0F;
+                IOState.DeltaRSX = 0.0F;
+                IOState.DeltaRSY = 0.0F;
             }
 
-            State.isGamepadConnected = true;
+            IOState.isGamepadConnected = true;
             HR = GI->GetCurrentReading(GameInputKindGamepad,
                                        nullptr,
                                        PrevReadingGamepad.GetAddressOf());
@@ -124,19 +124,19 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
     {
         if (deviceKind & GameInputKindKeyboard)
         {
-            State.isKeyboardConnected = false;
+            IOState.isKeyboardConnected = false;
             PrevReadingKeyboard.Reset();
             LOG_INFO("Keyboard disconnected.");
         }
         else if (deviceKind & GameInputKindMouse)
         {
-            State.isMouseConnected = false;
+            IOState.isMouseConnected = false;
             PrevReadingMouse.Reset();
             LOG_INFO("Mouse disconnected.");
         }
         else if (deviceKind & GameInputKindGamepad)
         {
-            State.isGamepadConnected = false;
+            IOState.isGamepadConnected = false;
             PrevReadingGamepad.Reset();
             LOG_INFO("Gamepad disconnected.");
         }
@@ -169,7 +169,7 @@ void UpdateKeyboardState()
 {
     ComPtr<IGameInputReading> currReadingKeyboard{};
 
-    if (State.isKeyboardConnected)
+    if (IOState.isKeyboardConnected)
     {
         HR = GI->GetCurrentReading(GameInputKindKeyboard,
                                    nullptr,
@@ -183,7 +183,7 @@ void UpdateKeyboardState()
         if (prevKeyCount == 0 && currKeyCount == 0)
         {
             // Reset the input state
-            std::ranges::fill(State.KeyboardKeys,
+            std::ranges::fill(IOState.KeyboardKeys,
                               Acrylic::Input::ButtonState::None);
 
             PrevReadingKeyboard.Swap(currReadingKeyboard);
@@ -222,7 +222,7 @@ void UpdateKeyboardState()
                 }
             }
 
-            UpdateButtonState(State.KeyboardKeys[i], wasPressed, isPressed);
+            UpdateButtonState(IOState.KeyboardKeys[i], wasPressed, isPressed);
         }
     }
 
@@ -233,7 +233,7 @@ void UpdateMouseState()
 {
     ComPtr<IGameInputReading> currReadingMouse{};
 
-    if (State.isMouseConnected)
+    if (IOState.isMouseConnected)
     {
         HR = GI->GetCurrentReading(GameInputKindMouse,
                                    nullptr,
@@ -247,27 +247,27 @@ void UpdateMouseState()
         currReadingMouse->GetMouseState(&currMouseState);
 
         // Update the state of mouse axes.
-        State.DeltaPX = static_cast<F32>(currMouseState.positionX -
-                                         prevMouseState.positionX);
-        State.DeltaPY = static_cast<F32>(currMouseState.positionY -
-                                         prevMouseState.positionY);
-        State.DeltaWY =
+        IOState.DeltaPX = static_cast<F32>(currMouseState.positionX -
+                                           prevMouseState.positionX);
+        IOState.DeltaPY = static_cast<F32>(currMouseState.positionY -
+                                           prevMouseState.positionY);
+        IOState.DeltaWY =
             static_cast<F32>(currMouseState.wheelY - prevMouseState.wheelY);
 
         // Update the state of mouse buttons.
-        UpdateButtonState(State.MouseL,
+        UpdateButtonState(IOState.MouseL,
                           prevMouseState.buttons & GameInputMouseLeftButton,
                           currMouseState.buttons & GameInputMouseLeftButton);
-        UpdateButtonState(State.MouseM,
+        UpdateButtonState(IOState.MouseM,
                           prevMouseState.buttons & GameInputMouseMiddleButton,
                           currMouseState.buttons & GameInputMouseMiddleButton);
-        UpdateButtonState(State.MouseR,
+        UpdateButtonState(IOState.MouseR,
                           prevMouseState.buttons & GameInputMouseRightButton,
                           currMouseState.buttons & GameInputMouseRightButton);
-        UpdateButtonState(State.Mouse4,
+        UpdateButtonState(IOState.Mouse4,
                           prevMouseState.buttons & GameInputMouseButton4,
                           currMouseState.buttons & GameInputMouseButton4);
-        UpdateButtonState(State.Mouse5,
+        UpdateButtonState(IOState.Mouse5,
                           prevMouseState.buttons & GameInputMouseButton5,
                           currMouseState.buttons & GameInputMouseButton5);
     }
@@ -279,7 +279,7 @@ void UpdateGamepadState()
 {
     ComPtr<IGameInputReading> currReadingGamepad{};
 
-    if (State.isGamepadConnected)
+    if (IOState.isGamepadConnected)
     {
         HR = GI->GetCurrentReading(GameInputKindGamepad,
                                    nullptr,
@@ -293,70 +293,70 @@ void UpdateGamepadState()
         currReadingGamepad->GetGamepadState(&currGamepadState);
 
         // Update the state of gamepad axes.
-        State.DeltaLT  = currGamepadState.leftTrigger > DeadZone
-                             ? currGamepadState.leftTrigger
-                             : 0.0F;
-        State.DeltaRT  = currGamepadState.rightTrigger > DeadZone
-                             ? currGamepadState.rightTrigger
-                             : 0.0F;
-        State.DeltaLSX = currGamepadState.leftThumbstickX > DeadZone
-                             ? currGamepadState.leftThumbstickX
-                             : 0.0F;
-        State.DeltaLSY = currGamepadState.leftThumbstickY > DeadZone
-                             ? currGamepadState.leftThumbstickY
-                             : 0.0F;
-        State.DeltaRSX = currGamepadState.rightThumbstickX > DeadZone
-                             ? currGamepadState.rightThumbstickX
-                             : 0.0F;
-        State.DeltaRSY = currGamepadState.rightThumbstickY > DeadZone
-                             ? currGamepadState.rightThumbstickY
-                             : 0.0F;
+        IOState.DeltaLT  = currGamepadState.leftTrigger > DeadZone
+                               ? currGamepadState.leftTrigger
+                               : 0.0F;
+        IOState.DeltaRT  = currGamepadState.rightTrigger > DeadZone
+                               ? currGamepadState.rightTrigger
+                               : 0.0F;
+        IOState.DeltaLSX = currGamepadState.leftThumbstickX > DeadZone
+                               ? currGamepadState.leftThumbstickX
+                               : 0.0F;
+        IOState.DeltaLSY = currGamepadState.leftThumbstickY > DeadZone
+                               ? currGamepadState.leftThumbstickY
+                               : 0.0F;
+        IOState.DeltaRSX = currGamepadState.rightThumbstickX > DeadZone
+                               ? currGamepadState.rightThumbstickX
+                               : 0.0F;
+        IOState.DeltaRSY = currGamepadState.rightThumbstickY > DeadZone
+                               ? currGamepadState.rightThumbstickY
+                               : 0.0F;
 
         // Update the state of gamepad buttons.
-        UpdateButtonState(State.GamePadMenu,
+        UpdateButtonState(IOState.GamePadMenu,
                           prevGamepadState.buttons & GameInputGamepadMenu,
                           currGamepadState.buttons & GameInputGamepadMenu);
-        UpdateButtonState(State.GamePadView,
+        UpdateButtonState(IOState.GamePadView,
                           prevGamepadState.buttons & GameInputGamepadView,
                           currGamepadState.buttons & GameInputGamepadView);
-        UpdateButtonState(State.GamePadA,
+        UpdateButtonState(IOState.GamePadA,
                           prevGamepadState.buttons & GameInputGamepadA,
                           currGamepadState.buttons & GameInputGamepadA);
-        UpdateButtonState(State.GamePadB,
+        UpdateButtonState(IOState.GamePadB,
                           prevGamepadState.buttons & GameInputGamepadB,
                           currGamepadState.buttons & GameInputGamepadB);
-        UpdateButtonState(State.GamePadX,
+        UpdateButtonState(IOState.GamePadX,
                           prevGamepadState.buttons & GameInputGamepadX,
                           currGamepadState.buttons & GameInputGamepadX);
-        UpdateButtonState(State.GamePadY,
+        UpdateButtonState(IOState.GamePadY,
                           prevGamepadState.buttons & GameInputGamepadY,
                           currGamepadState.buttons & GameInputGamepadY);
-        UpdateButtonState(State.GamePadDPadUp,
+        UpdateButtonState(IOState.GamePadDPadUp,
                           prevGamepadState.buttons & GameInputGamepadDPadUp,
                           currGamepadState.buttons & GameInputGamepadDPadUp);
-        UpdateButtonState(State.GamePadDPadDown,
+        UpdateButtonState(IOState.GamePadDPadDown,
                           prevGamepadState.buttons & GameInputGamepadDPadDown,
                           currGamepadState.buttons & GameInputGamepadDPadDown);
-        UpdateButtonState(State.GamePadDPadLeft,
+        UpdateButtonState(IOState.GamePadDPadLeft,
                           prevGamepadState.buttons & GameInputGamepadDPadLeft,
                           currGamepadState.buttons & GameInputGamepadDPadLeft);
-        UpdateButtonState(State.GamePadDPadRight,
+        UpdateButtonState(IOState.GamePadDPadRight,
                           prevGamepadState.buttons & GameInputGamepadDPadRight,
                           currGamepadState.buttons & GameInputGamepadDPadRight);
         UpdateButtonState(
-            State.GamePadLB,
+            IOState.GamePadLB,
             prevGamepadState.buttons & GameInputGamepadLeftShoulder,
             currGamepadState.buttons & GameInputGamepadLeftShoulder);
         UpdateButtonState(
-            State.GamePadRB,
+            IOState.GamePadRB,
             prevGamepadState.buttons & GameInputGamepadRightShoulder,
             currGamepadState.buttons & GameInputGamepadRightShoulder);
         UpdateButtonState(
-            State.GamePadLS,
+            IOState.GamePadLS,
             prevGamepadState.buttons & GameInputGamepadLeftThumbstick,
             currGamepadState.buttons & GameInputGamepadLeftThumbstick);
         UpdateButtonState(
-            State.GamePadRS,
+            IOState.GamePadRS,
             prevGamepadState.buttons & GameInputGamepadRightThumbstick,
             currGamepadState.buttons & GameInputGamepadRightThumbstick);
     }
@@ -376,8 +376,8 @@ void Init()
         {'W', 'S', 'A', 'D', VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_LSHIFT};
 
     // Reset the input state
-    State.KeyboardKeys.assign(ConcernedVirtualKeys.size(),
-                              Acrylic::Input::ButtonState::None);
+    IOState.KeyboardKeys.assign(ConcernedVirtualKeys.size(),
+                                Acrylic::Input::ButtonState::None);
 
     // Create GameInput and register device callback.
     HR = GameInputCreate(GI.GetAddressOf());
@@ -406,7 +406,7 @@ void Update()
 //==============================================================================
 auto GetState() -> InputState&
 {
-    return State;
+    return IOState;
 }
 } // namespace Acrylic::Input
 #pragma endregion

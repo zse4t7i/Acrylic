@@ -44,6 +44,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -60,6 +61,7 @@ using DirectX::XMFLOAT4;
 using DirectX::XMFLOAT4X4;
 using Microsoft::WRL::ComPtr;
 using std::array;
+using std::future;
 using std::ifstream;
 using std::optional;
 using std::queue;
@@ -123,7 +125,9 @@ inline constexpr F64 F64_MIN{std::numeric_limits<F64>::min()};
 #include "D3D12.hpp"
 #include "Input.hpp"
 #include "Log.hpp"
-#include "Timer.hpp"
 #include "State.hpp"
+#include "Timer.hpp"
 #include "Util.hpp"
 #include "Window.hpp"
+#include "AllocatorDynamic.hpp"
+#include "DescriptorPool.hpp"

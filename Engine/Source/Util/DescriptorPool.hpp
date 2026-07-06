@@ -2,7 +2,7 @@
 
 namespace Acrylic
 {
-class AllocatorCSU
+class DescriptorPoolCSU
 {
   public:
     void Init(ID3D12Device* device, U32 capacity);
@@ -37,8 +37,8 @@ class AllocatorCSU
                                 mSizeOfDescriptor);
     };
 
-    auto AllocateIndex() -> U32;
-    void FreeIndex(U32 index);
+    auto AcquireIndex() -> U32;
+    void ReleaseIndex(U32 index);
 
   private:
     ComPtr<ID3D12DescriptorHeap> mHeap;
@@ -51,7 +51,7 @@ class AllocatorCSU
     unordered_set<U32> mUsedIndices;
 };
 
-inline void AllocatorCSU::Init(ID3D12Device* device, U32 capacity)
+inline void DescriptorPoolCSU::Init(ID3D12Device* device, U32 capacity)
 {
     assert(mHeap == nullptr && "AllocatorCSU has already been initialized.");
 
@@ -79,7 +79,7 @@ inline void AllocatorCSU::Init(ID3D12Device* device, U32 capacity)
     mUsedIndices.clear();
 }
 
-inline auto AllocatorCSU::AllocateIndex() -> U32
+inline auto DescriptorPoolCSU::AcquireIndex() -> U32
 {
     assert(!mUsableIndices.empty() && "Out of index.");
 
@@ -91,7 +91,7 @@ inline auto AllocatorCSU::AllocateIndex() -> U32
     return index;
 }
 
-inline void AllocatorCSU::FreeIndex(U32 index)
+inline void DescriptorPoolCSU::ReleaseIndex(U32 index)
 {
     auto it = mUsedIndices.find(index);
 

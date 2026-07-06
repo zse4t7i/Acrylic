@@ -25,8 +25,6 @@ namespace Acrylic::ECS
 //==============================================================================
 void Init()
 {
-    auto& registry = GetRegistry();
-
     LOG_INFO("Acrylic::ECS::Init() succeeded.");
 }
 

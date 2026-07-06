@@ -25,16 +25,17 @@ void LoadDefaultAsset()
 
     entities.emplace_back(
         Entity{.Tag{.Name{"Cube"}},
+               .Transformation{},
                .Renderable{Acrylic::ECS::ComRenderable{.MeshIndices{0},
                                                        .MaterialIndices{0}}}});
     entities.emplace_back(
         Entity{.Tag{.Name{"Light"}},
                .Transformation{.Translation{4.0F, 4.0F, 4.0F}},
-               .Light{}});
+               .Light{{}}});
     entities.emplace_back(
         Entity{.Tag{.Name{"Camera"}},
                .Transformation{.Translation{2.0F, 2.0F, 2.0F}},
-               .Camera{}});
+               .Camera{{}}});
 
     viewMeshes.emplace_back(
         ViewMesh{.VB{.Path{"Mesh/Cube.bin"}, .Offset{0}, .Length{480}},

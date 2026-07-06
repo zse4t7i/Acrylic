@@ -1,3 +1,4 @@
+#include "Asset.hpp"
 #include "Scene.hpp"
 #include "Script.hpp"
 #include "UI.hpp"
@@ -21,6 +22,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
         Acrylic::Input::Init();
         Acrylic::Window::Init(hInst);
         Acrylic::D3D12::Init();
+        Acrylic::Asset::Load("");
         Acrylic::Scene::Init();
         Acrylic::UI::Init();
         LOG_INFO("Acrylic is ready!");

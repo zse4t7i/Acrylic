@@ -100,18 +100,21 @@ inline auto LoadBinary(const Path& path, vector<Byte>& outData) -> bool
     return true;
 }
 
-inline auto LoadImage(const Path& path, vector<Byte>& outData) -> bool
+inline auto LoadImage(const Path& path,
+                      vector<Byte>& outData,
+                      int& outWidth,
+                      int& outHeight) -> bool
 {
-    int x{};
-    int y{};
     int n{};
-    unsigned char* imageData = stbi_load(path.string().c_str(), &x, &y, &n, 4);
+    unsigned char* imageData =
+        stbi_load(path.string().c_str(), &outWidth, &outHeight, &n, 4);
     if (imageData == nullptr)
     {
         return false;
     }
 
-    outData.resize(static_cast<size_t>(x) * static_cast<size_t>(y) * 4);
+    outData.resize(static_cast<size_t>(outWidth) *
+                   static_cast<size_t>(outHeight) * 4);
     memcpy(outData.data(), imageData, outData.size());
     stbi_image_free(imageData);
 
@@ -122,7 +125,7 @@ inline void CreateRTV2D(ID3D12Device* device,
                         ID3D12Resource* resource,
                         DXGI_FORMAT format,
                         U32 mipSlice,
-                        CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                        D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_RENDER_TARGET_VIEW_DESC descRTV{};
     descRTV.ViewDimension        = D3D12_RTV_DIMENSION_TEXTURE2D;
@@ -137,7 +140,7 @@ inline void CreateDSV(ID3D12Device* device,
                       D3D12_DSV_FLAGS flags,
                       DXGI_FORMAT format,
                       U32 mipSlice,
-                      CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                      D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_DEPTH_STENCIL_VIEW_DESC descDSV{};
     descDSV.Flags              = flags;
@@ -151,7 +154,7 @@ inline void CreateSRV2D(ID3D12Device* device,
                         ID3D12Resource* resource,
                         DXGI_FORMAT format,
                         U32 mipLevels,
-                        CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                        D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_SHADER_RESOURCE_VIEW_DESC descSRV{};
     descSRV.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -168,7 +171,7 @@ inline void CreateSRV2DArray(ID3D12Device* device,
                              DXGI_FORMAT format,
                              U32 mipLevels,
                              U32 arraySize,
-                             CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                             D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_SHADER_RESOURCE_VIEW_DESC descSRV{};
     descSRV.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -186,7 +189,7 @@ inline void CreateSRVCube(ID3D12Device* device,
                           ID3D12Resource* resource,
                           DXGI_FORMAT format,
                           U32 mipLevels,
-                          CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                          D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_SHADER_RESOURCE_VIEW_DESC descSRV{};
     descSRV.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -203,7 +206,7 @@ inline void CreateSRVBuffer(ID3D12Device* device,
                             U32 elementCount,
                             U32 elementByteSize,
                             ID3D12Resource* resource,
-                            CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                            D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_SHADER_RESOURCE_VIEW_DESC descSRV{};
     descSRV.Format                  = DXGI_FORMAT_UNKNOWN; // structured buffer
@@ -220,7 +223,7 @@ inline void CreateUAV2D(ID3D12Device* device,
                         ID3D12Resource* resource,
                         DXGI_FORMAT format,
                         U32 mipSlice,
-                        CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                        D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_UNORDERED_ACCESS_VIEW_DESC descUAV{};
     descUAV.Format             = format;
@@ -236,7 +239,7 @@ inline void CreateUAVBuffer(ID3D12Device* device,
                             U64 counterOffset,
                             ID3D12Resource* resource,
                             ID3D12Resource* counterResource,
-                            CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor)
+                            D3D12_CPU_DESCRIPTOR_HANDLE hDescriptor)
 {
     D3D12_UNORDERED_ACCESS_VIEW_DESC descUAV{};
     descUAV.Format              = DXGI_FORMAT_UNKNOWN; // structured buffer
@@ -252,7 +255,7 @@ inline void CreateUAVBuffer(ID3D12Device* device,
                                       hDescriptor);
 }
 
-inline void Init(ID3D12Device* device)
+inline void CreateSampler(ID3D12Device* device)
 {
     constexpr D3D12_SAMPLER_DESC descSampler{
         .Filter         = D3D12_FILTER_MIN_MAG_MIP_POINT,
