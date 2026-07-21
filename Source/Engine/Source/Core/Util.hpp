@@ -2,7 +2,7 @@
 
 #include <stb_image.h>
 
-namespace Acrylic::Engine::Util
+namespace Acrylic::Util
 {
 inline auto UTF8216(string_view inUTF8, wstring& outUTF16) -> bool
 {
@@ -348,4 +348,4 @@ inline void CreateSampler(ID3D12Device* device)
         handleSampler.Offset(1, sizeSampler);
     }
 }
-} // namespace Acrylic::Engine::Util
+} // namespace Acrylic::Util

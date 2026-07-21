@@ -1,4 +1,4 @@
-#include "ECS.hpp"
+#include "Renderer.hpp"
 
 #pragma region Internal
 namespace
@@ -18,15 +18,14 @@ bool BR{};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Engine::ECS
+namespace Acrylic::Renderer
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    LOG_INFO("Acrylic::Engine::ECS::Init() succeeded.");
+    LOG_INFO("Acrylic::Renderer::Init() succeeded.");
 }
-
-} // namespace Acrylic::Engine::ECS
+} // namespace Acrylic::Renderer
 #pragma endregion

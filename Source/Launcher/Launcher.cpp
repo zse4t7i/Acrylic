@@ -16,25 +16,25 @@ auto WINAPI wWinMain(HINSTANCE hInst,
                      int nShowCmd) -> int
 {
     { // Init
-        Acrylic::Engine::Log::Init("Log/Acrylic.log");
-        Acrylic::Engine::Timer::Init();
-        Acrylic::Engine::Input::Init();
-        Acrylic::Engine::Window::Init(hInst);
-        Acrylic::Engine::D3D12::Init();
-        Acrylic::Engine::Asset::Load("");
-        Acrylic::Engine::Scene::Init();
-        Acrylic::Engine::UI::Init();
+        Acrylic::Log::Init("Log/Acrylic.log");
+        Acrylic::Timer::Init();
+        Acrylic::Input::Init();
+        Acrylic::Window::Init(hInst);
+        Acrylic::D3D12::Init();
+        Acrylic::Asset::Load("");
+        Acrylic::Scene::Init();
+        Acrylic::UI::Init();
         LOG_INFO("Acrylic is ready!");
     }
 
-    ShowWindow(Acrylic::Engine::Window::GetHWnd(), nShowCmd);
+    ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
 
     // Message loop.
     MSG msg{};
     while (true)
     {
-        Acrylic::Engine::D3D12::WaitForBufferAvailable();
-        Acrylic::Engine::D3D12::WaitForFrameAvailable();
+        Acrylic::D3D12::WaitForBufferAvailable();
+        Acrylic::D3D12::WaitForFrameAvailable();
 
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
@@ -51,21 +51,21 @@ auto WINAPI wWinMain(HINSTANCE hInst,
         }
 
         { // Update
-            Acrylic::Engine::Timer::Update();
-            Acrylic::Engine::Input::Update();
-            Acrylic::Engine::Scene::Update();
-            Acrylic::Engine::UI::Update();
+            Acrylic::Timer::Update();
+            Acrylic::Input::Update();
+            Acrylic::Scene::Update();
+            Acrylic::UI::Update();
         }
         { // Render
-            Acrylic::Engine::Scene::Render();
-            Acrylic::Engine::UI::Render();
+            Acrylic::Scene::Render();
+            Acrylic::UI::Render();
         }
 
         { // Present
 #ifdef DEBUG
-            Acrylic::Engine::D3D12::PresentTear();
+            Acrylic::D3D12::PresentTear();
 #else
-            Acrylic::Engine::D3D12::PresentSync();
+            Acrylic::D3D12::PresentSync();
 #endif
         }
     }

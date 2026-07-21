@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::Engine::D3D12
+namespace Acrylic::D3D12
 {
 //==============================================================================
 // External Constexpr
@@ -29,4 +29,4 @@ auto GetPtrCurrentRT() -> ID3D12Resource*;
 auto GetCurrentRTV() -> D3D12_CPU_DESCRIPTOR_HANDLE;
 auto GetFrameIndex() -> int;
 auto GetStrideCSU() -> U32;
-} // namespace Acrylic::Engine::D3D12
+} // namespace Acrylic::D3D12

@@ -6,7 +6,7 @@
 #include <quill/sinks/FileSink.h>
 
 #pragma region External
-namespace Acrylic::Engine::Log
+namespace Acrylic::Log
 {
 //==============================================================================
 // External Variable
@@ -55,5 +55,5 @@ void Flush()
 {
     AcrylicLogger->flush_log();
 }
-} // namespace Acrylic::Engine::Log
+} // namespace Acrylic::Log
 #pragma endregion

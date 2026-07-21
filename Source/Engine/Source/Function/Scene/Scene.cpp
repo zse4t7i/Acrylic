@@ -4,7 +4,7 @@
 #include "Resource.hpp"
 
 using namespace DirectX;
-using namespace Acrylic::Engine::ECS;
+using namespace Acrylic::ECS;
 
 #pragma region Internal
 namespace
@@ -42,14 +42,12 @@ D3D12MA::Allocator* AlctrGPU;
 // Internal D3D12 Objects
 ComPtr<ID3D12RootSignature> RS{};
 ComPtr<ID3D12PipelineState> PSO{};
-Acrylic::Engine::AllocationDynamic AllocCB{};
+Acrylic::AllocationDynamic AllocCB{};
 ComPtr<ID3D12GraphicsCommandList6> CmdList{};
-array<ComPtr<ID3D12CommandAllocator>, Acrylic::Engine::D3D12::FRAMECOUNT>
-    CmdAlctrs{};
-array<Acrylic::Engine::AllocatorDynamic, Acrylic::Engine::D3D12::FRAMECOUNT>
-    AlctrDynamics{};
+array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT> CmdAlctrs{};
+array<Acrylic::AllocatorDynamic, Acrylic::D3D12::FRAMECOUNT> AlctrDynamics{};
 
-Acrylic::Engine::DescriptorPoolCSU PoolSRV{};
+Acrylic::DescriptorPoolCSU PoolSRV{};
 //==============================================================================
 // Internal Function
 //==============================================================================
@@ -61,7 +59,7 @@ void InitInternalD3D12Objects()
                                     IID_PPV_ARGS(CmdList.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create command list.");
 
-    for (int i = 0; i < Acrylic::Engine::D3D12::FRAMECOUNT; i++)
+    for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; i++)
     {
         HR = Device->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,
@@ -72,8 +70,8 @@ void InitInternalD3D12Objects()
 
 void InitECSRegistry()
 {
-    auto& registry = Acrylic::Engine::ECS::GetRefRegistry();
-    auto& entities = Acrylic::Engine::Asset::GetRefEntities();
+    auto& registry = Acrylic::ECS::GetRefRegistry();
+    auto& entities = Acrylic::Asset::GetRefEntities();
 
     auto numberOfEntities = entities.size();
     for (int i = 0; i < numberOfEntities; i++)
@@ -161,13 +159,13 @@ void CreateRS()
 
 void CreatePSO()
 {
-    auto& viewMaterials = Acrylic::Engine::Asset::GetRefViewMaterials();
+    auto& viewMaterials = Acrylic::Asset::GetRefViewMaterials();
     vector<Byte> viewVS{};
     vector<Byte> viewPS{};
 
-    BR = Acrylic::Engine::Util::LoadBinary(viewMaterials[0].VS.Path, viewVS);
+    BR = Acrylic::Util::LoadBinary(viewMaterials[0].VS.Path, viewVS);
     assert(BR && "Failed to load binary file.");
-    BR = Acrylic::Engine::Util::LoadBinary(viewMaterials[0].PS.Path, viewPS);
+    BR = Acrylic::Util::LoadBinary(viewMaterials[0].PS.Path, viewPS);
     assert(BR && "Failed to load binary file.");
 
     constexpr array<D3D12_INPUT_ELEMENT_DESC, 2> descsInputElement{
@@ -210,25 +208,25 @@ void CreatePSO()
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Engine::Scene
+namespace Acrylic::Scene
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    Device   = Acrylic::Engine::D3D12::GetPtrDevice();
-    AlctrGPU = Acrylic::Engine::D3D12::GetPtrAlctrGPU();
-    CmdQueue = Acrylic::Engine::D3D12::GetPtrCmdQueue();
+    Device   = Acrylic::D3D12::GetPtrDevice();
+    AlctrGPU = Acrylic::D3D12::GetPtrAlctrGPU();
+    CmdQueue = Acrylic::D3D12::GetPtrCmdQueue();
 
     PoolSRV.Init(Device, 1024);
 
-    Acrylic::Engine::Resource::Init();
-    Acrylic::Engine::Resource::BeginAllocate();
-    Acrylic::Engine::Resource::AllocateAll(PoolSRV);
-    auto future = Acrylic::Engine::Resource::EndAllocate();
+    Acrylic::Resource::Init();
+    Acrylic::Resource::BeginAllocate();
+    Acrylic::Resource::AllocateAll(PoolSRV);
+    auto future = Acrylic::Resource::EndAllocate();
 
-    for (int i = 0; i < Acrylic::Engine::D3D12::FRAMECOUNT; i++)
+    for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; i++)
     {
         AlctrDynamics[i].Init(AlctrGPU, 64 * 1024);
     }
@@ -240,12 +238,12 @@ void Init()
     CreatePSO();
 
     future.get();
-    LOG_INFO("Acrylic::Engine::Scene::Init() succeeded.");
+    LOG_INFO("Acrylic::Scene::Init() succeeded.");
 }
 
 void Update()
 {
-    auto alctrDynamic = AlctrDynamics[Acrylic::Engine::D3D12::GetFrameIndex()];
+    auto alctrDynamic = AlctrDynamics[Acrylic::D3D12::GetFrameIndex()];
     alctrDynamic.Reset();
     AllocCB = alctrDynamic.Allocate(sizeof(ConstantBuffer), 256);
 
@@ -253,8 +251,8 @@ void Update()
     XMMATRIX projection{};
     XMMATRIX viewProjection{};
 
-    auto& inputState = Acrylic::Engine::Input::GetState();
-    auto& registry   = Acrylic::Engine::ECS::GetRefRegistry();
+    auto& inputState = Acrylic::Input::GetState();
+    auto& registry   = Acrylic::ECS::GetRefRegistry();
 
     auto viewLight = registry.view<ComLight>();
     viewLight.each([&](const auto& light) -> auto { cb.Color = light.Color; });
@@ -283,32 +281,28 @@ void Update()
         F32 acceleration = 2.0F;   // Speed multiplier when holding LSHIFT
 
         // Check if LSHIFT is held (index 8)
-        const bool isShiftHeld = inputState.KeyboardKeys[8] ==
-                                 Acrylic::Engine::Input::ButtonState::Held;
+        const bool isShiftHeld =
+            inputState.KeyboardKeys[8] == Acrylic::Input::ButtonState::Held;
         F32 currentSpeed = isShiftHeld ? moveSpeed * acceleration : moveSpeed;
 
         // Handle forward/backward movement (W/S or UP/DOWN)
-        if (inputState.KeyboardKeys[0] ==
-                Acrylic::Engine::Input::ButtonState::Held ||
+        if (inputState.KeyboardKeys[0] == Acrylic::Input::ButtonState::Held ||
             inputState.KeyboardKeys[4] ==
-                Acrylic::Engine::Input::ButtonState::Held) // W
+                Acrylic::Input::ButtonState::Held) // W
             eye = XMVectorAdd(eye, XMVectorScale(forward, currentSpeed));
-        if (inputState.KeyboardKeys[1] ==
-                Acrylic::Engine::Input::ButtonState::Held ||
+        if (inputState.KeyboardKeys[1] == Acrylic::Input::ButtonState::Held ||
             inputState.KeyboardKeys[5] ==
-                Acrylic::Engine::Input::ButtonState::Held) // S
+                Acrylic::Input::ButtonState::Held) // S
             eye = XMVectorSubtract(eye, XMVectorScale(forward, currentSpeed));
 
         // Handle left/right movement (A/D or LEFT/RIGHT)
-        if (inputState.KeyboardKeys[2] ==
-                Acrylic::Engine::Input::ButtonState::Held ||
+        if (inputState.KeyboardKeys[2] == Acrylic::Input::ButtonState::Held ||
             inputState.KeyboardKeys[6] ==
-                Acrylic::Engine::Input::ButtonState::Held) // A
+                Acrylic::Input::ButtonState::Held) // A
             eye = XMVectorAdd(eye, XMVectorScale(right, currentSpeed));
-        if (inputState.KeyboardKeys[3] ==
-                Acrylic::Engine::Input::ButtonState::Held ||
+        if (inputState.KeyboardKeys[3] == Acrylic::Input::ButtonState::Held ||
             inputState.KeyboardKeys[7] ==
-                Acrylic::Engine::Input::ButtonState::Held) // D
+                Acrylic::Input::ButtonState::Held) // D
             eye = XMVectorSubtract(eye, XMVectorScale(right, currentSpeed));
 
         // Update camera position
@@ -382,28 +376,27 @@ void Update()
 
 void Render()
 {
-    auto& allocMeshes    = Acrylic::Engine::Resource::GetRefAllocMeshes();
-    auto& allocMaterials = Acrylic::Engine::Resource::GetRefAllocMaterials();
-    auto& registry       = Acrylic::Engine::ECS::GetRefRegistry();
-    auto* currentRT      = Acrylic::Engine::D3D12::GetPtrCurrentRT();
-    auto currentRTV      = Acrylic::Engine::D3D12::GetCurrentRTV();
-    auto frameIndex      = Acrylic::Engine::D3D12::GetFrameIndex();
+    auto& allocMeshes    = Acrylic::Resource::GetRefAllocMeshes();
+    auto& allocMaterials = Acrylic::Resource::GetRefAllocMaterials();
+    auto& registry       = Acrylic::ECS::GetRefRegistry();
+    auto* currentRT      = Acrylic::D3D12::GetPtrCurrentRT();
+    auto currentRTV      = Acrylic::D3D12::GetCurrentRTV();
+    auto frameIndex      = Acrylic::D3D12::GetFrameIndex();
 
     HR = CmdAlctrs[frameIndex]->Reset();
     assert(SUCCEEDED(HR) && "Failed to reset command allocator.");
     HR = CmdList->Reset(CmdAlctrs[frameIndex].Get(), PSO.Get());
     assert(SUCCEEDED(HR) && "Failed to reset command list.");
 
-    CD3DX12_VIEWPORT Viewport{
-        0.0F,
-        0.0F,
-        static_cast<F32>(Acrylic::Engine::Window::GetWidth()),
-        static_cast<F32>(Acrylic::Engine::Window::GetHeight())};
+    CD3DX12_VIEWPORT Viewport{0.0F,
+                              0.0F,
+                              static_cast<F32>(Acrylic::Window::GetWidth()),
+                              static_cast<F32>(Acrylic::Window::GetHeight())};
 
     CD3DX12_RECT ScissorRect{0,
                              0,
-                             Acrylic::Engine::Window::GetWidth(),
-                             Acrylic::Engine::Window::GetHeight()};
+                             Acrylic::Window::GetWidth(),
+                             Acrylic::Window::GetHeight()};
 
     CmdList->RSSetViewports(1, &Viewport);
     CmdList->RSSetScissorRects(1, &ScissorRect);
@@ -456,5 +449,5 @@ void Render()
 // Accessors
 //==============================================================================
 
-} // namespace Acrylic::Engine::Scene
+} // namespace Acrylic::Scene
 #pragma endregion

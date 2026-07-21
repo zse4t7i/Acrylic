@@ -190,19 +190,19 @@ void AllocateTexture(const vector<Byte>& allocCPU,
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Engine::Resource
+namespace Acrylic::Resource
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    Device   = Acrylic::Engine::D3D12::GetPtrDevice();
-    AlctrGPU = Acrylic::Engine::D3D12::GetPtrAlctrGPU();
+    Device   = Acrylic::D3D12::GetPtrDevice();
+    AlctrGPU = Acrylic::D3D12::GetPtrAlctrGPU();
 
     InitCopyEngine();
 
-    LOG_INFO("Acrylic::Engine::Resource::Init() succeeded.");
+    LOG_INFO("Acrylic::Resource::Init() succeeded.");
 }
 
 void BeginAllocate()
@@ -214,10 +214,10 @@ void BeginAllocate()
     assert(SUCCEEDED(HR) && "Failed to reset command list.");
 }
 
-void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
+void AllocateAll(Acrylic::DescriptorPoolCSU& poolSRV)
 {
-    auto& viewMeshes     = Acrylic::Engine::Asset::GetRefViewMeshes();
-    auto& viewMaterials  = Acrylic::Engine::Asset::GetRefViewMaterials();
+    auto& viewMeshes     = Acrylic::Asset::GetRefViewMeshes();
+    auto& viewMaterials  = Acrylic::Asset::GetRefViewMaterials();
     auto& allocMeshes    = GetRefAllocMeshes();
     auto& allocMaterials = GetRefAllocMaterials();
 
@@ -229,7 +229,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
         { // Vertex Buffer
             vector<Byte> viewFile{};
 
-            BR = Acrylic::Engine::Util::LoadBinary(viewMesh.VB.Path, viewFile);
+            BR = Acrylic::Util::LoadBinary(viewMesh.VB.Path, viewFile);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMesh.VB.Length == 0
@@ -255,7 +255,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
         { // Index Buffer
             vector<Byte> viewFile{};
 
-            BR = Acrylic::Engine::Util::LoadBinary(viewMesh.IB.Path, viewFile);
+            BR = Acrylic::Util::LoadBinary(viewMesh.IB.Path, viewFile);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMesh.IB.Length == 0
@@ -295,11 +295,10 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
             int width{};
             int height{};
 
-            BR = Acrylic::Engine::Util::LoadImage(
-                viewMaterial.TexBaseColor->Path,
-                viewFile,
-                width,
-                height);
+            BR = Acrylic::Util::LoadImage(viewMaterial.TexBaseColor->Path,
+                                          viewFile,
+                                          width,
+                                          height);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMaterial.TexBaseColor->Length == 0
@@ -322,7 +321,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
             // Create SRV for the texture.
             allocMaterial.TexBaseColor->DescriptorIndex =
                 poolSRV.AcquireIndex();
-            Acrylic::Engine::Util::CreateSRV2D(
+            Acrylic::Util::CreateSRV2D(
                 Device,
                 allocMaterial.TexBaseColor->AllocGPU->GetResource(),
                 DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -338,10 +337,10 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
             int width{};
             int height{};
 
-            BR = Acrylic::Engine::Util::LoadImage(viewMaterial.TexNormal->Path,
-                                                  viewFile,
-                                                  width,
-                                                  height);
+            BR = Acrylic::Util::LoadImage(viewMaterial.TexNormal->Path,
+                                          viewFile,
+                                          width,
+                                          height);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMaterial.TexNormal->Length == 0
@@ -363,7 +362,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
 
             // Create SRV for the texture.
             allocMaterial.TexNormal->DescriptorIndex = poolSRV.AcquireIndex();
-            Acrylic::Engine::Util::CreateSRV2D(
+            Acrylic::Util::CreateSRV2D(
                 Device,
                 allocMaterial.TexNormal->AllocGPU->GetResource(),
                 DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -379,10 +378,10 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
             int width{};
             int height{};
 
-            BR = Acrylic::Engine::Util::LoadImage(viewMaterial.TexARM->Path,
-                                                  viewFile,
-                                                  width,
-                                                  height);
+            BR = Acrylic::Util::LoadImage(viewMaterial.TexARM->Path,
+                                          viewFile,
+                                          width,
+                                          height);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMaterial.TexARM->Length == 0
@@ -404,7 +403,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
 
             // Create SRV for the texture.
             allocMaterial.TexARM->DescriptorIndex = poolSRV.AcquireIndex();
-            Acrylic::Engine::Util::CreateSRV2D(
+            Acrylic::Util::CreateSRV2D(
                 Device,
                 allocMaterial.TexARM->AllocGPU->GetResource(),
                 DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -419,11 +418,10 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
             int width{};
             int height{};
 
-            BR =
-                Acrylic::Engine::Util::LoadImage(viewMaterial.TexEmissive->Path,
-                                                 viewFile,
-                                                 width,
-                                                 height);
+            BR = Acrylic::Util::LoadImage(viewMaterial.TexEmissive->Path,
+                                          viewFile,
+                                          width,
+                                          height);
             assert(BR && "Failed to load binary file.");
 
             U32 length = viewMaterial.TexEmissive->Length == 0
@@ -445,7 +443,7 @@ void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV)
 
             // Create SRV for the texture.
             allocMaterial.TexEmissive->DescriptorIndex = poolSRV.AcquireIndex();
-            Acrylic::Engine::Util::CreateSRV2D(
+            Acrylic::Util::CreateSRV2D(
                 Device,
                 allocMaterial.TexEmissive->AllocGPU->GetResource(),
                 DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -479,5 +477,5 @@ auto EndAllocate() -> future<void>
 
     return future;
 }
-} // namespace Acrylic::Engine::Resource
+} // namespace Acrylic::Resource
 #pragma endregion

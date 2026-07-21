@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::Engine::Resource
+namespace Acrylic::Resource
 {
 //==============================================================================
 // External Struct
@@ -39,7 +39,7 @@ struct AllocMaterial
 //==============================================================================
 void Init();
 void BeginAllocate();
-void AllocateAll(Acrylic::Engine::DescriptorPoolCSU& poolSRV);
+void AllocateAll(Acrylic::DescriptorPoolCSU& poolSRV);
 auto EndAllocate() -> future<void>;
 
 inline auto GetRefAllocMeshes() -> vector<AllocMesh>&
@@ -52,4 +52,4 @@ inline auto GetRefAllocMaterials() -> vector<AllocMaterial>&
     static vector<AllocMaterial> AllocMaterials{};
     return AllocMaterials;
 }
-} // namespace Acrylic::Engine::Resource
+} // namespace Acrylic::Resource

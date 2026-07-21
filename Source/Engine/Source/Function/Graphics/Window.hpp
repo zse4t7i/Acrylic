@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::Engine::Window
+namespace Acrylic::Window
 {
 void Init(HINSTANCE hInst);
 
@@ -12,4 +12,4 @@ auto GetMinimized() -> bool;
 void SetWidth(int width);
 void SetHeight(int height);
 void SetMinimized(bool minimized);
-} // namespace Acrylic::Engine::Window
+} // namespace Acrylic::Window

@@ -1,9 +1,10 @@
 #pragma once
 
-namespace Acrylic::Engine::Renderer
+namespace Acrylic::Config
 {
 //==============================================================================
 // External Function
 //==============================================================================
-void Init();
-} // namespace Acrylic::Engine::Renderer
+void Load(const Path& configPath);
+void Save(const Path& configPath);
+} // namespace Acrylic::Config

@@ -24,7 +24,7 @@ U64 FrameCounter{0};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Engine::Timer
+namespace Acrylic::Timer
 {
 void Init()
 {
@@ -65,5 +65,5 @@ auto GetFrameCount() -> U64
 {
     return FrameCounter;
 }
-} // namespace Acrylic::Engine::Timer
+} // namespace Acrylic::Timer
 #pragma endregion

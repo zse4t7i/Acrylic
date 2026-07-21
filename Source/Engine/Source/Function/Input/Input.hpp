@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::Engine::Input
+namespace Acrylic::Input
 {
 enum class ButtonState : U8
 {
@@ -61,4 +61,4 @@ void Init();
 void Update();
 
 auto GetState() -> InputState&;
-} // namespace Acrylic::Engine::Input
+} // namespace Acrylic::Input

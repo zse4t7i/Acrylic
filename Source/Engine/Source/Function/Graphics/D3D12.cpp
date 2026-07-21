@@ -24,13 +24,13 @@ U32 StrideCSU{};
 ComPtr<IDXGISwapChain4> SwapChain{};
 HANDLE EventBufferAvailable{};
 ComPtr<ID3D12DescriptorHeap> HeapRTV{};
-array<ComPtr<ID3D12Resource>, Acrylic::Engine::D3D12::BUFFERCOUNT> RTs{};
+array<ComPtr<ID3D12Resource>, Acrylic::D3D12::BUFFERCOUNT> RTs{};
 
 // Frame Objects
 int FrameIndex{0};
 HANDLE EventCmdExecuted{};
 ComPtr<ID3D12Fence1> FrameFence{};
-array<U64, Acrylic::Engine::D3D12::FRAMECOUNT> FrameFVs{0, 0};
+array<U64, Acrylic::D3D12::FRAMECOUNT> FrameFVs{0, 0};
 
 //==============================================================================
 // Internal Function
@@ -99,9 +99,9 @@ void InitSwapChain()
 {
     { // Create SwapChain.
         DXGI_SWAP_CHAIN_DESC1 descSwapChain{};
-        descSwapChain.BufferCount      = Acrylic::Engine::D3D12::BUFFERCOUNT;
-        descSwapChain.Width            = Acrylic::Engine::Window::GetWidth();
-        descSwapChain.Height           = Acrylic::Engine::Window::GetHeight();
+        descSwapChain.BufferCount      = Acrylic::D3D12::BUFFERCOUNT;
+        descSwapChain.Width            = Acrylic::Window::GetWidth();
+        descSwapChain.Height           = Acrylic::Window::GetHeight();
         descSwapChain.Format           = DXGI_FORMAT_R8G8B8A8_UNORM;
         descSwapChain.BufferUsage      = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         descSwapChain.SwapEffect       = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -112,7 +112,7 @@ void InitSwapChain()
 
         ComPtr<IDXGISwapChain1> swapChain{};
         HR = Factory->CreateSwapChainForHwnd(CmdQueue.Get(),
-                                             Acrylic::Engine::Window::GetHWnd(),
+                                             Acrylic::Window::GetHWnd(),
                                              &descSwapChain,
                                              nullptr,
                                              nullptr,
@@ -125,13 +125,13 @@ void InitSwapChain()
         assert(SUCCEEDED(HR) && "Failed to SetMaximumFrameLatency(2).");
         EventBufferAvailable = SwapChain->GetFrameLatencyWaitableObject();
 
-        Factory->MakeWindowAssociation(Acrylic::Engine::Window::GetHWnd(),
+        Factory->MakeWindowAssociation(Acrylic::Window::GetHWnd(),
                                        DXGI_MWA_NO_ALT_ENTER);
     }
 
     { // Create RTs and RTV
         D3D12_DESCRIPTOR_HEAP_DESC descHeapRTV{};
-        descHeapRTV.NumDescriptors = Acrylic::Engine::D3D12::BUFFERCOUNT;
+        descHeapRTV.NumDescriptors = Acrylic::D3D12::BUFFERCOUNT;
         descHeapRTV.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         descHeapRTV.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
@@ -144,7 +144,7 @@ void InitSwapChain()
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE handleRTV{
             HeapRTV->GetCPUDescriptorHandleForHeapStart()};
-        for (int i = 0; i < Acrylic::Engine::D3D12::BUFFERCOUNT; i++)
+        for (int i = 0; i < Acrylic::D3D12::BUFFERCOUNT; i++)
         {
             HR = SwapChain->GetBuffer(i, IID_PPV_ARGS(RTs[i].GetAddressOf()));
             assert(SUCCEEDED(HR) && "Failed to get SwapChain buffer.");
@@ -183,7 +183,7 @@ void QueryHardwareInfo()
 
     DXGI_ADAPTER_DESC1 descAdapter{};
     Adapter->GetDesc1(&descAdapter);
-    Acrylic::Engine::Util::UTF1628(descAdapter.Description, GPUName);
+    Acrylic::Util::UTF1628(descAdapter.Description, GPUName);
     LOG_INFO("GPU Name: {}.", GPUName);
 
     StrideCSU = Device->GetDescriptorHandleIncrementSize(
@@ -193,7 +193,7 @@ void QueryHardwareInfo()
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Engine::D3D12
+namespace Acrylic::D3D12
 {
 void Init()
 {
@@ -203,7 +203,7 @@ void Init()
 
     QueryHardwareInfo();
 
-    LOG_INFO("Acrylic::Engine::D3D12::Init() succeeded.");
+    LOG_INFO("Acrylic::D3D12::Init() succeeded.");
 }
 
 void WaitForBufferAvailable()
@@ -213,8 +213,8 @@ void WaitForBufferAvailable()
 
 void WaitForCmdExecuted()
 {
-    HR = Acrylic::Engine::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(),
-                                                          FrameFVs[FrameIndex]);
+    HR = Acrylic::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(),
+                                                  FrameFVs[FrameIndex]);
     assert(SUCCEEDED(HR) && "Failed to signal command queue.");
 
     HR = FrameFence->SetEventOnCompletion(FrameFVs[FrameIndex]++,
@@ -227,8 +227,7 @@ void WaitForFrameAvailable()
 {
     const auto currentFV = FrameFVs[FrameIndex];
 
-    HR = Acrylic::Engine::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(),
-                                                          currentFV);
+    HR = Acrylic::D3D12::GetPtrCmdQueue()->Signal(FrameFence.Get(), currentFV);
     assert(SUCCEEDED(HR) && "Failed to signal command queue.");
 
     FrameIndex = (FrameIndex + 1) % FRAMECOUNT;
@@ -246,7 +245,7 @@ void WaitForFrameAvailable()
 
 void Resize()
 {
-    // Acrylic::Engine::D3D12::WaitForCmdExecuted();
+    // Acrylic::D3D12::WaitForCmdExecuted();
 
     // Release the resources holding references to the SwapChain.
     // Requirement of IDXGISwapChain::ResizeBuffers.
@@ -259,8 +258,8 @@ void Resize()
     DXGI_SWAP_CHAIN_DESC1 desc{};
     SwapChain->GetDesc1(&desc);
     HR = SwapChain->ResizeBuffers(BUFFERCOUNT,
-                                  Acrylic::Engine::Window::GetWidth(),
-                                  Acrylic::Engine::Window::GetHeight(),
+                                  Acrylic::Window::GetWidth(),
+                                  Acrylic::Window::GetHeight(),
                                   desc.Format,
                                   desc.Flags);
     assert(SUCCEEDED(HR) && "Failed to resize SwapChain buffers.");
@@ -333,5 +332,5 @@ auto GetStrideCSU() -> U32
 {
     return StrideCSU;
 }
-} // namespace Acrylic::Engine::D3D12
+} // namespace Acrylic::D3D12
 #pragma endregion

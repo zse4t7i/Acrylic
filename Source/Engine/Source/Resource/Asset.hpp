@@ -2,7 +2,7 @@
 
 #include <ECS.hpp>
 
-namespace Acrylic::Engine::Asset
+namespace Acrylic::Asset
 {
 //==============================================================================
 // External Struct
@@ -34,12 +34,12 @@ struct ViewMaterial
 
 struct Entity
 {
-    Acrylic::Engine::ECS::ComTag Tag;
-    Acrylic::Engine::ECS::ComTransform Transformation;
+    Acrylic::ECS::ComTag Tag;
+    Acrylic::ECS::ComTransform Transformation;
 
-    optional<Acrylic::Engine::ECS::ComRenderable> Renderable;
-    optional<Acrylic::Engine::ECS::ComLight> Light;
-    optional<Acrylic::Engine::ECS::ComCamera> Camera;
+    optional<Acrylic::ECS::ComRenderable> Renderable;
+    optional<Acrylic::ECS::ComLight> Light;
+    optional<Acrylic::ECS::ComCamera> Camera;
 };
 //==============================================================================
 // External Function
@@ -62,4 +62,4 @@ inline auto GetRefViewMaterials() -> vector<ViewMaterial>&
     static vector<ViewMaterial> ViewMaterials{};
     return ViewMaterials;
 }
-} // namespace Acrylic::Engine::Asset
+} // namespace Acrylic::Asset

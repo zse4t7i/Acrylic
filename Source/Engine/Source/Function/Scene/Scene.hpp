@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Acrylic::Engine
+namespace Acrylic::Scene
 {
 void Init();
 void Update();
 void Render();
-} // namespace Acrylic
+} // namespace Acrylic::Scene

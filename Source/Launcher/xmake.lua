@@ -1,7 +1,7 @@
 target("AcrylicLauncher", function ()
     set_kind("binary")
-    set_default(false)
+    set_default(true)
     add_deps("AcrylicEngine")
 
-    add_files("Script/**.cpp")
+    add_files("**.cpp")
 end)

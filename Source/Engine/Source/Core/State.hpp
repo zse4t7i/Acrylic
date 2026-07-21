@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::Engine::State
+namespace Acrylic::State
 {
 struct StateRuntimeEnvironment
 {
@@ -16,4 +16,4 @@ inline auto GetRefStateEnv() -> StateRuntimeEnvironment&
     static StateRuntimeEnvironment StateEnv{};
     return StateEnv;
 }
-} // namespace Acrylic::Engine::State
+} // namespace Acrylic::State

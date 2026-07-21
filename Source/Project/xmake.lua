@@ -63,13 +63,14 @@ rule("CompileShader")
 
 target("AcrylicProject", function ()
     set_kind("shared")
+    set_default(false)
 
     add_rules("CopyProjectResource")
     add_rules("CompileShader")
     add_rules("utils.symbols.export_all", {export_classes = true})
 
-    add_files("Script/**.cpp")
+    add_files("Source/**.cpp")
     add_files("Shader/**.hlsl")
 
-    add_includedirs("Script", {public=true})
+    add_includedirs("Source", {public=true})
 end)
