@@ -24,7 +24,7 @@ rule("CopyD3D12AgilitySDK")
         target:add("defines", "D3D12_AGILITY_SDK_VERSION=" .. version)
     end)
 
-target("AcrylicEngine", function ()
+target("Engine", function ()
     set_kind("static")
     set_pcxxheader("Source/PCH.hpp")
 
@@ -36,11 +36,12 @@ target("AcrylicEngine", function ()
 
     add_files("Source/**.cpp")
 
+    add_includedirs("Source/Asset", {public=true})
+    add_includedirs("Source/Core", {public=true})
     add_includedirs("Source/Graphics", {public=true})
     add_includedirs("Source/Platform", {public=true})
     add_includedirs("Source/Scene", {public=true})
     add_includedirs("Source/UI", {public=true})
-    add_includedirs("Source/Util", {public=true})
 
     add_packages("quill")
     add_packages("benchmark")
