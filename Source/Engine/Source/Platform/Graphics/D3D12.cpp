@@ -291,12 +291,12 @@ void PresentTear()
     assert(SUCCEEDED(HR) && "Failed to present swap chain frame.");
 }
 
-// void Exit()
-// {
-//     WaitForCmdExecuted();
-//     CloseHandle(EventCmdExecuted);
-//     CloseHandle(EventBufferAvailable);
-// }
+void Exit()
+{
+    WaitForCmdExecuted();
+    CloseHandle(EventCmdExecuted);
+    CloseHandle(EventBufferAvailable);
+}
 
 //==============================================================================
 // Accessors

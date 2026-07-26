@@ -36,10 +36,13 @@ target("Engine", function ()
 
     add_files("Source/**.cpp")
 
+    add_includedirs("Source/", {public=true})
     add_includedirs("Source/Asset", {public=true})
     add_includedirs("Source/Core", {public=true})
-    add_includedirs("Source/Graphics", {public=true})
-    add_includedirs("Source/Platform", {public=true})
+    add_includedirs("Source/Platform/Graphics", {public=true})
+    add_includedirs("Source/Platform/Input", {public=true})
+    add_includedirs("Source/Platform/Timer", {public=true})
+    add_includedirs("Source/Platform/Window", {public=true})
     add_includedirs("Source/Scene", {public=true})
     add_includedirs("Source/UI", {public=true})
 

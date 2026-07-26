@@ -20,7 +20,7 @@ void Resize();
 void PresentSync();
 // Present w/o V-Sync.
 void PresentTear();
-// void Exit();
+void Exit();
 
 auto GetPtrDevice() -> ID3D12Device9*;
 auto GetPtrCmdQueue() -> ID3D12CommandQueue*;

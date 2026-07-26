@@ -199,12 +199,12 @@ void Render()
     CmdQueue->ExecuteCommandLists(cmdLists.size(), cmdLists.data());
 }
 
-// void Exit()
-// {
-//     Acrylic::D3D12::WaitForCmdExecuted();
-//     ImGui_ImplDX12_Shutdown();
-//     ImGui_ImplWin32_Shutdown();
-//     ImGui::DestroyContext();
-// }
+void Exit()
+{
+    Acrylic::D3D12::WaitForCmdExecuted();
+    ImGui_ImplDX12_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+}
 } // namespace Acrylic::UI
 #pragma endregion

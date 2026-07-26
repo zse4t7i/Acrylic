@@ -1,6 +1,4 @@
-#include "Asset.hpp"
-#include "Scene.hpp"
-#include "UI.hpp"
+#include "Engine.hpp"
 
 // Used to enable the "Agility SDK" components
 extern "C"
@@ -15,17 +13,7 @@ auto WINAPI wWinMain(HINSTANCE hInst,
                      PWSTR /*pCmdLine*/,
                      int nShowCmd) -> int
 {
-    { // Init
-        Acrylic::Log::Init("Log/Acrylic.log");
-        Acrylic::Timer::Init();
-        Acrylic::Input::Init();
-        Acrylic::Window::Init(hInst);
-        Acrylic::D3D12::Init();
-        Acrylic::Asset::Load("");
-        Acrylic::Scene::Init();
-        Acrylic::UI::Init();
-        LOG_INFO("Acrylic is ready!");
-    }
+    Acrylic::Engine::Init(hInst);
 
     ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
 
@@ -50,16 +38,8 @@ auto WINAPI wWinMain(HINSTANCE hInst,
             break;
         }
 
-        { // Update
-            Acrylic::Timer::Update();
-            Acrylic::Input::Update();
-            Acrylic::Scene::Update();
-            Acrylic::UI::Update();
-        }
-        { // Render
-            Acrylic::Scene::Render();
-            Acrylic::UI::Render();
-        }
+        Acrylic::Engine::Update();
+        Acrylic::Engine::Render();
 
         { // Present
 #ifdef DEBUG
@@ -69,6 +49,8 @@ auto WINAPI wWinMain(HINSTANCE hInst,
 #endif
         }
     }
+
+    Acrylic::Engine::Exit();
 
     return static_cast<int>(msg.wParam);
 }
