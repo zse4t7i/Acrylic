@@ -17,7 +17,7 @@ bool BR{};
 F32 DeadZone{0.2F};
 
 ComPtr<IGameInput> GI{};
-Acrylic::Input::InputState IOState{};
+Acrylic::Engine::Input::InputState IOState{};
 
 vector<U8> ConcernedVirtualKeys{};
 
@@ -51,7 +51,7 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         {
             { // Reset the input state
                 std::ranges::fill(IOState.KeyboardKeys,
-                                  Acrylic::Input::ButtonState::None);
+                                  Acrylic::Engine::Input::ButtonState::None);
             }
 
             IOState.isKeyboardConnected = true;
@@ -65,11 +65,11 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         else if (deviceKind & GameInputKindMouse)
         {
             { // Reset the input state
-                IOState.MouseL = Acrylic::Input::ButtonState::None;
-                IOState.MouseM = Acrylic::Input::ButtonState::None;
-                IOState.MouseR = Acrylic::Input::ButtonState::None;
-                IOState.Mouse4 = Acrylic::Input::ButtonState::None;
-                IOState.Mouse5 = Acrylic::Input::ButtonState::None;
+                IOState.MouseL = Acrylic::Engine::Input::ButtonState::None;
+                IOState.MouseM = Acrylic::Engine::Input::ButtonState::None;
+                IOState.MouseR = Acrylic::Engine::Input::ButtonState::None;
+                IOState.Mouse4 = Acrylic::Engine::Input::ButtonState::None;
+                IOState.Mouse5 = Acrylic::Engine::Input::ButtonState::None;
 
                 IOState.DeltaPX = 0.0F;
                 IOState.DeltaPY = 0.0F;
@@ -87,20 +87,24 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
         else if (deviceKind & GameInputKindGamepad)
         {
             { // Reset the input state
-                IOState.GamePadMenu      = Acrylic::Input::ButtonState::None;
-                IOState.GamePadView      = Acrylic::Input::ButtonState::None;
-                IOState.GamePadA         = Acrylic::Input::ButtonState::None;
-                IOState.GamePadB         = Acrylic::Input::ButtonState::None;
-                IOState.GamePadX         = Acrylic::Input::ButtonState::None;
-                IOState.GamePadY         = Acrylic::Input::ButtonState::None;
-                IOState.GamePadDPadUp    = Acrylic::Input::ButtonState::None;
-                IOState.GamePadDPadDown  = Acrylic::Input::ButtonState::None;
-                IOState.GamePadDPadLeft  = Acrylic::Input::ButtonState::None;
-                IOState.GamePadDPadRight = Acrylic::Input::ButtonState::None;
-                IOState.GamePadLB        = Acrylic::Input::ButtonState::None;
-                IOState.GamePadRB        = Acrylic::Input::ButtonState::None;
-                IOState.GamePadLS        = Acrylic::Input::ButtonState::None;
-                IOState.GamePadRS        = Acrylic::Input::ButtonState::None;
+                IOState.GamePadMenu = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadView = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadA    = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadB    = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadX    = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadY    = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadDPadUp =
+                    Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadDPadDown =
+                    Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadDPadLeft =
+                    Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadDPadRight =
+                    Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadLB = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadRB = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadLS = Acrylic::Engine::Input::ButtonState::None;
+                IOState.GamePadRS = Acrylic::Engine::Input::ButtonState::None;
 
                 IOState.DeltaLT  = 0.0F;
                 IOState.DeltaRT  = 0.0F;
@@ -143,25 +147,25 @@ void OnDeviceConnectionChanged(_In_ GameInputCallbackToken callbackToken,
     }
 }
 
-void UpdateButtonState(Acrylic::Input::ButtonState& buttonState,
+void UpdateButtonState(Acrylic::Engine::Input::ButtonState& buttonState,
                        bool wasPressed,
                        bool isPressed)
 {
     if (!wasPressed && isPressed)
     {
-        buttonState = Acrylic::Input::ButtonState::Pressed;
+        buttonState = Acrylic::Engine::Input::ButtonState::Pressed;
     }
     else if (wasPressed && isPressed)
     {
-        buttonState = Acrylic::Input::ButtonState::Held;
+        buttonState = Acrylic::Engine::Input::ButtonState::Held;
     }
     else if (wasPressed && !isPressed)
     {
-        buttonState = Acrylic::Input::ButtonState::Released;
+        buttonState = Acrylic::Engine::Input::ButtonState::Released;
     }
     else if (!wasPressed && !isPressed)
     {
-        buttonState = Acrylic::Input::ButtonState::None;
+        buttonState = Acrylic::Engine::Input::ButtonState::None;
     }
 };
 
@@ -184,7 +188,7 @@ void UpdateKeyboardState()
         {
             // Reset the input state
             std::ranges::fill(IOState.KeyboardKeys,
-                              Acrylic::Input::ButtonState::None);
+                              Acrylic::Engine::Input::ButtonState::None);
 
             PrevReadingKeyboard.Swap(currReadingKeyboard);
             return;
@@ -367,7 +371,7 @@ void UpdateGamepadState()
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Input
+namespace Acrylic::Engine::Input
 {
 void Init()
 {
@@ -377,7 +381,7 @@ void Init()
 
     // Reset the input state
     IOState.KeyboardKeys.assign(ConcernedVirtualKeys.size(),
-                                Acrylic::Input::ButtonState::None);
+                                Acrylic::Engine::Input::ButtonState::None);
 
     // Create GameInput and register device callback.
     HR = GameInputCreate(GI.GetAddressOf());
@@ -392,7 +396,7 @@ void Init()
                                     &DeviceCallbackToken);
     assert(SUCCEEDED(HR) && "Failed to register device callback.");
 
-    LOG_INFO("Acrylic::D3D12::Input() succeeded.");
+    LOG_INFO("Acrylic::Engine::D3D12::Input() succeeded.");
 }
 
 void Update()
@@ -408,5 +412,5 @@ auto GetState() -> InputState&
 {
     return IOState;
 }
-} // namespace Acrylic::Input
+} // namespace Acrylic::Engine::Input
 #pragma endregion

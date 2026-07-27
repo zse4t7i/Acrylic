@@ -24,7 +24,8 @@ ID3D12CommandQueue* CmdQueue;
 // Internal D3D12 Objects
 ComPtr<ID3D12DescriptorHeap> HeapSRV{};
 ComPtr<ID3D12GraphicsCommandList6> CmdList{};
-array<ComPtr<ID3D12CommandAllocator>, Acrylic::D3D12::FRAMECOUNT> CmdAlctrs{};
+array<ComPtr<ID3D12CommandAllocator>, Acrylic::Engine::D3D12::FRAMECOUNT>
+    CmdAlctrs{};
 //==============================================================================
 // Internal Function
 //==============================================================================
@@ -48,9 +49,9 @@ void InitInternalD3D12Objects()
                                     IID_PPV_ARGS(CmdList.GetAddressOf()));
     assert(SUCCEEDED(HR) && "Failed to create command list.");
 
-    for (int i = 0; i < Acrylic::D3D12::FRAMECOUNT; i++)
+    for (int i = 0; i < Acrylic::Engine::D3D12::FRAMECOUNT; i++)
     {
-        HR = Acrylic::D3D12::GetPtrDevice()->CreateCommandAllocator(
+        HR = Acrylic::Engine::D3D12::GetPtrDevice()->CreateCommandAllocator(
             D3D12_COMMAND_LIST_TYPE_DIRECT,
             IID_PPV_ARGS(CmdAlctrs[i].GetAddressOf()));
         assert(SUCCEEDED(HR) && "Failed to create command allocator.");
@@ -60,7 +61,7 @@ void InitInternalD3D12Objects()
 void InitImGuiBackend()
 {
     // Setup Platform/Renderer backends
-    ImGui_ImplWin32_Init(Acrylic::Window::GetHWnd());
+    ImGui_ImplWin32_Init(Acrylic::Engine::Window::GetHWnd());
 
     for (int i = DESCIPTORCOUNT - 1; i >= 0; i--)
     {
@@ -68,9 +69,9 @@ void InitImGuiBackend()
     }
 
     ImGui_ImplDX12_InitInfo initInfo{};
-    initInfo.Device            = Acrylic::D3D12::GetPtrDevice();
-    initInfo.CommandQueue      = Acrylic::D3D12::GetPtrCmdQueue();
-    initInfo.NumFramesInFlight = Acrylic::D3D12::FRAMECOUNT;
+    initInfo.Device            = Acrylic::Engine::D3D12::GetPtrDevice();
+    initInfo.CommandQueue      = Acrylic::Engine::D3D12::GetPtrCmdQueue();
+    initInfo.NumFramesInFlight = Acrylic::Engine::D3D12::FRAMECOUNT;
     initInfo.RTVFormat         = DXGI_FORMAT_R8G8B8A8_UNORM;
     initInfo.DSVFormat         = DXGI_FORMAT_UNKNOWN;
     initInfo.SrvDescriptorHeap = HeapSRV.Get();
@@ -84,9 +85,9 @@ void InitImGuiBackend()
         int index = HeapIndices.top();
         HeapIndices.pop();
         outHandleCPU->ptr = HeapSRV->GetCPUDescriptorHandleForHeapStart().ptr +
-                            (index * Acrylic::D3D12::GetStrideCSU());
+                            (index * Acrylic::Engine::D3D12::GetStrideCSU());
         outHandleGPU->ptr = HeapSRV->GetGPUDescriptorHandleForHeapStart().ptr +
-                            (index * Acrylic::D3D12::GetStrideCSU());
+                            (index * Acrylic::Engine::D3D12::GetStrideCSU());
     };
     initInfo.SrvDescriptorFreeFn =
         [](ImGui_ImplDX12_InitInfo*,
@@ -95,11 +96,11 @@ void InitImGuiBackend()
         int indexCPU = static_cast<int>(
             (handleCPU.ptr -
              HeapSRV->GetCPUDescriptorHandleForHeapStart().ptr) /
-            Acrylic::D3D12::GetStrideCSU());
+            Acrylic::Engine::D3D12::GetStrideCSU());
         int indexGPU = static_cast<int>(
             (handleGPU.ptr -
              HeapSRV->GetGPUDescriptorHandleForHeapStart().ptr) /
-            Acrylic::D3D12::GetStrideCSU());
+            Acrylic::Engine::D3D12::GetStrideCSU());
         assert(indexCPU == indexGPU &&
                "CPU and GPU descriptor index do not match.");
         HeapIndices.push(indexCPU);
@@ -110,15 +111,15 @@ void InitImGuiBackend()
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::UI
+namespace Acrylic::Engine::UI
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    Device   = Acrylic::D3D12::GetPtrDevice();
-    CmdQueue = Acrylic::D3D12::GetPtrCmdQueue();
+    Device   = Acrylic::Engine::D3D12::GetPtrDevice();
+    CmdQueue = Acrylic::Engine::D3D12::GetPtrCmdQueue();
 
     { // Init ImGui
         IMGUI_CHECKVERSION();
@@ -145,7 +146,7 @@ void Init()
     InitInternalD3D12Objects();
     InitImGuiBackend();
 
-    LOG_INFO("Acrylic::UI::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::UI::Init() succeeded.");
 }
 
 void Update()
@@ -164,9 +165,9 @@ void Update()
 
 void Render()
 {
-    auto* currentRT = Acrylic::D3D12::GetPtrCurrentRT();
-    auto currentRTV = Acrylic::D3D12::GetCurrentRTV();
-    auto frameIndex = Acrylic::D3D12::GetFrameIndex();
+    auto* currentRT = Acrylic::Engine::D3D12::GetPtrCurrentRT();
+    auto currentRTV = Acrylic::Engine::D3D12::GetCurrentRTV();
+    auto frameIndex = Acrylic::Engine::D3D12::GetFrameIndex();
 
     HR = CmdAlctrs[frameIndex]->Reset();
     assert(SUCCEEDED(HR) && "Failed to reset command allocator.");
@@ -201,10 +202,10 @@ void Render()
 
 void Exit()
 {
-    Acrylic::D3D12::WaitForCmdExecuted();
+    Acrylic::Engine::D3D12::WaitForCmdExecuted();
     ImGui_ImplDX12_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 }
-} // namespace Acrylic::UI
+} // namespace Acrylic::Engine::UI
 #pragma endregion

@@ -18,15 +18,15 @@ bool BR{};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::ECS
+namespace Acrylic::Engine::ECS
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    LOG_INFO("Acrylic::ECS::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::ECS::Init() succeeded.");
 }
 
-} // namespace Acrylic::ECS
+} // namespace Acrylic::Engine::ECS
 #pragma endregion

@@ -6,4 +6,4 @@ void Init(HINSTANCE hInst);
 void Update();
 void Render();
 void Exit();
-} // namespace Acrylic::Engine
+} // namespace Acrylic::Engine::Engine

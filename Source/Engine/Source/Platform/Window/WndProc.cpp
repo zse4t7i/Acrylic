@@ -19,7 +19,7 @@ namespace
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Window
+namespace Acrylic::Engine::Window
 {
 auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     -> LRESULT
@@ -37,13 +37,13 @@ auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     case WM_SIZE: {
-        Acrylic::Window::SetMinimized(wParam == SIZE_MINIMIZED);
-        Acrylic::Window::SetWidth(LOWORD(lParam));
-        Acrylic::Window::SetHeight(HIWORD(lParam));
+        Acrylic::Engine::Window::SetMinimized(wParam == SIZE_MINIMIZED);
+        Acrylic::Engine::Window::SetWidth(LOWORD(lParam));
+        Acrylic::Engine::Window::SetHeight(HIWORD(lParam));
 
         if (wParam != SIZE_MINIMIZED)
         {
-            Acrylic::D3D12::Resize();
+            Acrylic::Engine::D3D12::Resize();
             // LOG_DEBUG("Resized.");
         }
         return 0;
@@ -53,5 +53,5 @@ auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         return DefWindowProcW(hWnd, uMsg, wParam, lParam);
     }
 }
-} // namespace Acrylic::Window
+} // namespace Acrylic::Engine::Window
 #pragma endregion

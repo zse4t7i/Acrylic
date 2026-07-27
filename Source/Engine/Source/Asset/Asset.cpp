@@ -1,6 +1,6 @@
 #include "Asset.hpp"
 
-using namespace Acrylic::Asset;
+using namespace Acrylic::Engine::Asset;
 
 #pragma region Internal
 namespace
@@ -19,15 +19,15 @@ Path DirProject{};
 //==============================================================================
 void LoadDefaultAsset()
 {
-    auto& entities      = Acrylic::Asset::GetRefEntities();
-    auto& viewMeshes    = Acrylic::Asset::GetRefViewMeshes();
-    auto& viewMaterials = Acrylic::Asset::GetRefViewMaterials();
+    auto& entities      = Acrylic::Engine::Asset::GetRefEntities();
+    auto& viewMeshes    = Acrylic::Engine::Asset::GetRefViewMeshes();
+    auto& viewMaterials = Acrylic::Engine::Asset::GetRefViewMaterials();
 
-    entities.emplace_back(
-        Entity{.Tag{.Name{"Cube"}},
-               .Transformation{},
-               .Renderable{Acrylic::ECS::ComRenderable{.MeshIndices{0},
-                                                       .MaterialIndices{0}}}});
+    entities.emplace_back(Entity{
+        .Tag{.Name{"Cube"}},
+        .Transformation{},
+        .Renderable{Acrylic::Engine::ECS::ComRenderable{.MeshIndices{0},
+                                                        .MaterialIndices{0}}}});
     entities.emplace_back(
         Entity{.Tag{.Name{"Light"}},
                .Transformation{.Translation{4.0F, 4.0F, 4.0F}},
@@ -56,7 +56,7 @@ void LoadDefaultAsset()
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Asset
+namespace Acrylic::Engine::Asset
 {
 //==============================================================================
 // External Function
@@ -68,7 +68,7 @@ void Load(const Path& dirProject)
     // TODO: Temporary implementation for testing.
     LoadDefaultAsset();
 
-    LOG_INFO("Acrylic::Asset::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::Asset::Init() succeeded.");
 }
-} // namespace Acrylic::Asset
+} // namespace Acrylic::Engine::Asset
 #pragma endregion

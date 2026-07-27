@@ -10,35 +10,35 @@ namespace Acrylic::Engine
 //==============================================================================
 void Init(HINSTANCE hInst)
 {
-    Acrylic::Log::Init("Log/Acrylic.log");
-    Acrylic::Timer::Init();
-    Acrylic::Input::Init();
-    Acrylic::Window::Init(hInst);
-    Acrylic::D3D12::Init();
-    Acrylic::Asset::Load("");
-    Acrylic::Scene::Init();
-    Acrylic::UI::Init();
+    Acrylic::Engine::Log::Init("Log/Acrylic.log");
+    Acrylic::Engine::Timer::Init();
+    Acrylic::Engine::Input::Init();
+    Acrylic::Engine::Window::Init(hInst);
+    Acrylic::Engine::D3D12::Init();
+    Acrylic::Engine::Asset::Load("");
+    Acrylic::Engine::Scene::Init();
+    Acrylic::Engine::UI::Init();
     LOG_INFO("Acrylic is ready!");
 }
 
 void Update()
 {
-    Acrylic::Timer::Update();
-    Acrylic::Input::Update();
-    Acrylic::Scene::Update();
-    Acrylic::UI::Update();
+    Acrylic::Engine::Timer::Update();
+    Acrylic::Engine::Input::Update();
+    Acrylic::Engine::Scene::Update();
+    Acrylic::Engine::UI::Update();
 }
 
 void Render()
 {
-    Acrylic::Scene::Render();
-    Acrylic::UI::Render();
+    Acrylic::Engine::Scene::Render();
+    Acrylic::Engine::UI::Render();
 }
 
 void Exit()
 {
-    Acrylic::UI::Exit();
-    Acrylic::D3D12::Exit();
+    Acrylic::Engine::UI::Exit();
+    Acrylic::Engine::D3D12::Exit();
 }
 
 } // namespace Acrylic::Engine

@@ -18,14 +18,14 @@ bool BR{};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Renderer
+namespace Acrylic::Engine::Renderer
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    LOG_INFO("Acrylic::Renderer::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::Renderer::Init() succeeded.");
 }
-} // namespace Acrylic::Renderer
+} // namespace Acrylic::Engine::Renderer
 #pragma endregion

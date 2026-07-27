@@ -8,9 +8,9 @@ struct AllocationDynamic
     D3D12_GPU_VIRTUAL_ADDRESS AddressGPU{};
 };
 
-// One instance per Acrylic::D3D12::FRAMECOUNT.
+// One instance per Acrylic::Engine::D3D12::FRAMECOUNT.
 // Reset() is only safe to call after
-// Acrylic::D3D12::WaitForFrameAvailable().
+// Acrylic::Engine::D3D12::WaitForFrameAvailable().
 class AllocatorDynamic
 {
   public:

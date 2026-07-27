@@ -15,14 +15,14 @@ namespace
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::State
+namespace Acrylic::Engine::State
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init()
 {
-    LOG_INFO("Acrylic::State::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::State::Init() succeeded.");
 }
-} // namespace Acrylic::State
+} // namespace Acrylic::Engine::State
 #pragma endregion

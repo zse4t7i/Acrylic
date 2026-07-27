@@ -18,19 +18,19 @@ bool BR{};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Config
+namespace Acrylic::Engine::Config
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Load(const Path& configPath)
 {
-    LOG_INFO("Acrylic::Config::Load() succeeded.");
+    LOG_INFO("Acrylic::Engine::Config::Load() succeeded.");
 }
 
 void Save(const Path& configPath)
 {
-    LOG_INFO("Acrylic::Config::Save() succeeded.");
+    LOG_INFO("Acrylic::Engine::Config::Save() succeeded.");
 }
-} // namespace Acrylic::Config
+} // namespace Acrylic::Engine::Config
 #pragma endregion

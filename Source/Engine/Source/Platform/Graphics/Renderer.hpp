@@ -1,9 +1,9 @@
 #pragma once
 
-namespace Acrylic::Renderer
+namespace Acrylic::Engine::Renderer
 {
 //==============================================================================
 // External Function
 //==============================================================================
 void Init();
-} // namespace Acrylic::Renderer
+} // namespace Acrylic::Engine::Renderer

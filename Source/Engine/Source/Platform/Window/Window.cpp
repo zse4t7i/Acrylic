@@ -21,7 +21,7 @@ bool Minimized{false};
 #pragma endregion
 
 #pragma region External
-namespace Acrylic::Window
+namespace Acrylic::Engine::Window
 {
 auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     -> LRESULT;
@@ -64,7 +64,7 @@ void Init(HINSTANCE hInst)
                            hInst,
                            nullptr);
 
-    LOG_INFO("Acrylic::Window::Init() succeeded.");
+    LOG_INFO("Acrylic::Engine::Window::Init() succeeded.");
 }
 
 //==============================================================================
@@ -100,5 +100,5 @@ void SetMinimized(bool minimized)
     Minimized = minimized;
 }
 
-} // namespace Acrylic::Window
+} // namespace Acrylic::Engine::Window
 #pragma endregion

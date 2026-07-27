@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic::ECS
+namespace Acrylic::Engine::ECS
 {
 //==============================================================================
 // External Struct
@@ -55,4 +55,4 @@ inline auto GetRefRegistry() -> entt::registry&
     static entt::registry Registry{};
     return Registry;
 }
-} // namespace Acrylic::ECS
+} // namespace Acrylic::Engine::ECS

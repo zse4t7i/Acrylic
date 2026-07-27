@@ -15,14 +15,14 @@ auto WINAPI wWinMain(HINSTANCE hInst,
 {
     Acrylic::Engine::Init(hInst);
 
-    ShowWindow(Acrylic::Window::GetHWnd(), nShowCmd);
+    ShowWindow(Acrylic::Engine::Window::GetHWnd(), nShowCmd);
 
     // Message loop.
     MSG msg{};
     while (true)
     {
-        Acrylic::D3D12::WaitForBufferAvailable();
-        Acrylic::D3D12::WaitForFrameAvailable();
+        Acrylic::Engine::D3D12::WaitForBufferAvailable();
+        Acrylic::Engine::D3D12::WaitForFrameAvailable();
 
         while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
         {
@@ -43,9 +43,9 @@ auto WINAPI wWinMain(HINSTANCE hInst,
 
         { // Present
 #ifdef DEBUG
-            Acrylic::D3D12::PresentTear();
+            Acrylic::Engine::D3D12::PresentTear();
 #else
-            Acrylic::D3D12::PresentSync();
+            Acrylic::Engine::D3D12::PresentSync();
 #endif
         }
     }
