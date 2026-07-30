@@ -14,11 +14,7 @@ if is_mode("debug") then
 elseif is_mode("release") then
     add_defines("NDEBUG")
     add_defines("RELEASE")
-    add_defines("QUILL_COMPILE_ACTIVE_LOG_LEVEL=QUILL_COMPILE_ACTIVE_LOG_LEVEL_INFO")
 end
-
-add_defines("QUILL_DISABLE_NON_PREFIXED_MACROS")
-add_defines("D3D12MA_USING_DIRECTX_HEADERS")
 
 add_requires("quill")
 add_requires("benchmark")

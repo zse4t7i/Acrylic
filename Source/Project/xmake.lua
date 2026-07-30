@@ -61,7 +61,7 @@ rule("CompileShader")
             opt.progress, "${color.build.object}Compiling HLSL: %s", sourcefile)
     end)
 
-target("Project", function ()
+target("AcrylicProject", function ()
     set_kind("shared")
     set_default(false)
 
