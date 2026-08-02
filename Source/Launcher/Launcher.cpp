@@ -1,5 +1,7 @@
 #include "Engine.hpp"
 
+#include <windows.h>
+
 // Used to enable the "Agility SDK" components
 extern "C"
 {
