@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Acrylic
+namespace Acrylic::Engine
 {
 struct AllocationDynamic
 {

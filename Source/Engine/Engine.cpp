@@ -35,10 +35,29 @@ void Render()
     Acrylic::Engine::UI::Render();
 }
 
+void Present()
+{
+#ifdef DEBUG
+    Acrylic::Engine::D3D12::PresentTear();
+#else
+    Acrylic::Engine::D3D12::PresentSync();
+#endif
+}
+
 void Exit()
 {
     Acrylic::Engine::UI::Exit();
     Acrylic::Engine::D3D12::Exit();
 }
 
+void ShowWindow(int nShowCmd)
+{
+    ShowWindow(Acrylic::Engine::Window::GetHWnd(), nShowCmd);
+}
+
+void WaitForNextFrame()
+{
+    Acrylic::Engine::D3D12::WaitForBufferAvailable();
+    Acrylic::Engine::D3D12::WaitForFrameAvailable();
+}
 } // namespace Acrylic::Engine
