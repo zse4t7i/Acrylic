@@ -12,9 +12,9 @@ inline constexpr int FRAMECOUNT{2};
 //==============================================================================
 void Init();
 void WaitForCmdExecuted();
-void WaitForFrameAvailable();
+void WaitForFrameResourceAvailable();
 // Waits for the SwapChain to be ready for the next frame.
-void WaitForBufferAvailable();
+void WaitForFrameBufferAvailable();
 void Resize();
 // Present w/ V-Sync.
 void PresentSync();

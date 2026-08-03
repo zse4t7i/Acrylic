@@ -206,7 +206,7 @@ void Init()
     LOG_INFO("Acrylic::Engine::D3D12::Init() succeeded.");
 }
 
-void WaitForBufferAvailable()
+void WaitForFrameBufferAvailable()
 {
     WaitForSingleObject(EventBufferAvailable, 1000);
 }
@@ -223,7 +223,7 @@ void WaitForCmdExecuted()
     WaitForSingleObject(EventCmdExecuted, INFINITE);
 }
 
-void WaitForFrameAvailable()
+void WaitForFrameResourceAvailable()
 {
     const auto currentFV = FrameFVs[FrameIndex];
 

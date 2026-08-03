@@ -10,7 +10,7 @@ struct AllocationDynamic
 
 // One instance per Acrylic::Engine::D3D12::FRAMECOUNT.
 // Reset() is only safe to call after
-// Acrylic::Engine::D3D12::WaitForFrameAvailable().
+// Acrylic::Engine::D3D12::WaitForFrameResourceAvailable().
 class AllocatorDynamic
 {
   public:
@@ -89,4 +89,4 @@ inline auto AllocatorDynamic::Allocate(U32 size, U32 alignment)
     mAllocSize = alignedAllocSize + size;
     return alloc;
 };
-} // namespace Acrylic
+} // namespace Acrylic::Engine

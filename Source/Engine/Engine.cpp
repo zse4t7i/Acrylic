@@ -57,7 +57,7 @@ void ShowWindow(int nShowCmd)
 
 void WaitForNextFrame()
 {
-    Acrylic::Engine::D3D12::WaitForBufferAvailable();
-    Acrylic::Engine::D3D12::WaitForFrameAvailable();
+    Acrylic::Engine::D3D12::WaitForFrameBufferAvailable();
+    Acrylic::Engine::D3D12::WaitForFrameResourceAvailable();
 }
 } // namespace Acrylic::Engine
