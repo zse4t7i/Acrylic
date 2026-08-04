@@ -1,6 +1,13 @@
 #include "Scene.hpp"
 #include "Asset.hpp"
+#include "Input.hpp"
+#include "Window.hpp"
 #include "ECS.hpp"
+#include "Log.hpp"
+#include "Util.hpp"
+#include "D3D12.hpp"
+#include "AllocatorDynamic.hpp"
+#include "DescriptorPool.hpp"
 #include "Resource.hpp"
 
 using namespace DirectX;

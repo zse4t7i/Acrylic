@@ -14,8 +14,7 @@ add_rules("plugin.compile_commands.autoupdate", {outputdir = "build"})
 if is_mode("debug") then
     add_defines("DEBUG", "_DEBUG")
 elseif is_mode("release") then
-    add_defines("NDEBUG")
-    add_defines("RELEASE")
+    add_defines("NDEBUG", "RELEASE")
 end
 
 add_requires("quill")

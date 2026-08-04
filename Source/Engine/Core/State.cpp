@@ -1,4 +1,5 @@
 #include "State.hpp"
+#include "Log.hpp"
 
 #pragma region Internal
 namespace

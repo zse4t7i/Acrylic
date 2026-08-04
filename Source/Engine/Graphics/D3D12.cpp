@@ -1,3 +1,8 @@
+#include "D3D12.hpp"
+#include "Window.hpp"
+#include "Log.hpp"
+#include "Util.hpp"
+
 #pragma region Internal
 namespace
 {

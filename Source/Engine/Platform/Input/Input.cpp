@@ -1,6 +1,5 @@
 #include "Input.hpp"
-
-#include <algorithm>
+#include "Log.hpp"
 
 using namespace GameInput::v3;
 

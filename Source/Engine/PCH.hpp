@@ -120,14 +120,3 @@ inline constexpr F32 F32_MIN{std::numeric_limits<F32>::min()};
 using F64 = double;
 inline constexpr F64 F64_MAX{std::numeric_limits<F64>::max()};
 inline constexpr F64 F64_MIN{std::numeric_limits<F64>::min()};
-
-// Acrylic Header
-#include "D3D12.hpp"
-#include "Input.hpp"
-#include "Log.hpp"
-#include "State.hpp"
-#include "Timer.hpp"
-#include "Util.hpp"
-#include "Window.hpp"
-#include "AllocatorDynamic.hpp"
-#include "DescriptorPool.hpp"

@@ -1,5 +1,9 @@
 #include "Resource.hpp"
 #include "Asset.hpp"
+#include "Util.hpp"
+#include "D3D12.hpp"
+#include "Log.hpp"
+#include "DescriptorPool.hpp"
 
 #pragma region Internal
 namespace

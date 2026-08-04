@@ -1,4 +1,5 @@
 #include "Asset.hpp"
+#include "Log.hpp"
 
 using namespace Acrylic::Engine::Asset;
 

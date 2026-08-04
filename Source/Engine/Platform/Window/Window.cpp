@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include "Log.hpp"
 
 #pragma region Internal
 namespace
@@ -23,9 +24,6 @@ bool Minimized{false};
 #pragma region External
 namespace Acrylic::Engine::Window
 {
-auto CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-    -> LRESULT;
-
 void Init(HINSTANCE hInst)
 {
     // This makes sure that in a multi-monitor setup with different resolutions,

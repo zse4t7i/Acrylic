@@ -1,4 +1,5 @@
 #include "Renderer.hpp"
+#include "Log.hpp"
 
 #pragma region Internal
 namespace

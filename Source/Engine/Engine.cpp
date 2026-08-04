@@ -2,6 +2,11 @@
 #include "Asset.hpp"
 #include "Scene.hpp"
 #include "UI.hpp"
+#include "Log.hpp"
+#include "Input.hpp"
+#include "Timer.hpp"
+#include "Window.hpp"
+#include "D3D12.hpp"
 
 namespace Acrylic::Engine
 {

@@ -1,4 +1,5 @@
 #include "Config.hpp"
+#include "Log.hpp"
 
 #pragma region Internal
 namespace

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "DescriptorPool.hpp"
+
 namespace Acrylic::Engine::Resource
 {
 //==============================================================================
