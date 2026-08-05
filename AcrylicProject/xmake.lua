@@ -1,4 +1,4 @@
-rule("CopyProjectResource")
+rule("CopyProjectAsset")
     before_build(function (target)
         os.cp("$(scriptdir)/Mesh/", target:targetdir(), {copy_if_different = true})
         os.cp("$(scriptdir)/Texture/", target:targetdir(), {copy_if_different = true})
@@ -65,7 +65,7 @@ target("AcrylicProject", function ()
     set_kind("shared")
     set_default(false)
 
-    add_rules("CopyProjectResource")
+    add_rules("CopyProjectAsset")
     add_rules("CompileShader")
     add_rules("utils.symbols.export_all", {export_classes = true})
 

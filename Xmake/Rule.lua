@@ -1,6 +1,6 @@
 rule("CopyAcrylicAsset")
     before_build(function (target)
-        os.cp("$(projectdir)/Asset/Font/", target:targetdir(), {copy_if_different = true})
+        os.cp("$(projectdir)/AcrylicAsset/Font/", target:targetdir(), {copy_if_different = true})
 
         cprint("${bright green}Acrylic's assets copied!")
     end)
