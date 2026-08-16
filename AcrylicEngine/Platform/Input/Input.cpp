@@ -395,7 +395,7 @@ void Init()
                                     &DeviceCallbackToken);
     assert(SUCCEEDED(HR) && "Failed to register device callback.");
 
-    LOG_INFO("Acrylic::Engine::D3D12::Input() succeeded.");
+    LOG_INFO("Acrylic::Engine::Input::Init() succeeded.");
 }
 
 void Update()

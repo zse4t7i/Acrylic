@@ -1,4 +1,5 @@
 #include "Timer.hpp"
+#include "Log.hpp"
 
 #pragma region Internal
 namespace
@@ -12,8 +13,8 @@ LARGE_INTEGER TimeStampCurrent;
 LARGE_INTEGER TimeStampPrevious;
 
 // All Measured in seconds.
-F64 TimeTotal{0.0};
-F64 TimeDelta{0.0};
+F64 FrameTime{0.0F};
+F64 TotalTime{0.0F};
 
 U64 FrameCounter{0};
 //==============================================================================
@@ -32,34 +33,37 @@ void Init()
     QueryPerformanceCounter(&TimeStampStart);
     TimeStampCurrent  = TimeStampStart;
     TimeStampPrevious = TimeStampStart;
+
+    LOG_INFO("Acrylic::Engine::Timer::Init() succeeded.");
 }
+
 void Update()
 {
     TimeStampPrevious = TimeStampCurrent;
     QueryPerformanceCounter(&TimeStampCurrent);
 
     FrameCounter++;
-    TimeDelta = static_cast<F64>(TimeStampCurrent.QuadPart -
+    FrameTime = static_cast<F64>(TimeStampCurrent.QuadPart -
                                  TimeStampPrevious.QuadPart) /
                 static_cast<F64>(CounterFrequency.QuadPart);
-    TimeTotal =
+    TotalTime =
         static_cast<F64>(TimeStampCurrent.QuadPart - TimeStampStart.QuadPart) /
         static_cast<F64>(CounterFrequency.QuadPart);
 }
 //==============================================================================
 // Accessors
 //==============================================================================
-auto GetDeltaTime() -> F64
+auto GetFrameTime() -> F64
 {
-    return TimeDelta;
+    return FrameTime;
 }
 auto GetTotalTime() -> F64
 {
-    return TimeTotal;
+    return TotalTime;
 }
 auto GetFPS() -> F32
 {
-    return TimeDelta > 0.0 ? static_cast<F32>(1.0F / TimeDelta) : 0.0F;
+    return FrameTime > 0.0F ? static_cast<F32>(1.0F / FrameTime) : 0.0F;
 }
 auto GetFrameCount() -> U64
 {

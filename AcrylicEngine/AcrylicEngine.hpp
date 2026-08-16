@@ -12,4 +12,4 @@ void Exit();
 
 void ShowWindow(int nShowCmd);
 void WaitForNextFrame();
-} // namespace Acrylic::Engine::Engine
+} // namespace Acrylic::Engine

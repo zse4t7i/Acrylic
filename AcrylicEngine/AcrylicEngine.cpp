@@ -8,7 +8,6 @@
 #include "UI.hpp"
 #include "Window.hpp"
 
-
 namespace Acrylic::Engine
 {
 //==============================================================================
@@ -16,7 +15,7 @@ namespace Acrylic::Engine
 //==============================================================================
 void Init(HINSTANCE hInst)
 {
-    Acrylic::Engine::Log::Init("Log/Acrylic.log");
+    Acrylic::Engine::Log::Init("Log/AcrylicEngine.log");
     Acrylic::Engine::Timer::Init();
     Acrylic::Engine::Input::Init();
     Acrylic::Engine::Window::Init(hInst);
@@ -24,7 +23,7 @@ void Init(HINSTANCE hInst)
     Acrylic::Engine::Asset::Load("");
     Acrylic::Engine::Scene::Init();
     Acrylic::Engine::UI::Init();
-    LOG_INFO("Acrylic is ready!");
+    LOG_INFO("AcrylicEngine is initialized!");
 }
 
 void Update()
@@ -58,7 +57,7 @@ void Exit()
 
 void ShowWindow(int nShowCmd)
 {
-    ShowWindow(Acrylic::Engine::Window::GetHWnd(), nShowCmd);
+    ::ShowWindow(Acrylic::Engine::Window::GetHWnd(), nShowCmd);
 }
 
 void WaitForNextFrame()
