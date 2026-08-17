@@ -1,5 +1,6 @@
 #include "Input.hpp"
 #include "Log.hpp"
+#include "State.hpp"
 
 using namespace GameInput::v3;
 
@@ -16,7 +17,6 @@ bool BR{};
 F32 DeadZone{0.2F};
 
 ComPtr<IGameInput> GI{};
-Acrylic::Engine::Input::InputState IOState{};
 
 vector<U8> ConcernedVirtualKeys{};
 
