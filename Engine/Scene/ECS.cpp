@@ -1,0 +1,33 @@
+#include "ECS.hpp"
+#include "Log.hpp"
+
+#pragma region Internal
+namespace
+{
+//==============================================================================
+// Internal Variable
+//==============================================================================
+// Return result for assertion.
+HRESULT HR{};
+bool BR{};
+
+//==============================================================================
+// Internal Function
+//==============================================================================
+
+} // namespace
+#pragma endregion
+
+#pragma region External
+namespace Acrylic::ECS
+{
+//==============================================================================
+// External Function
+//==============================================================================
+void Init()
+{
+    LOG_INFO("Acrylic::ECS::Init() succeeded.");
+}
+
+} // namespace Acrylic::ECS
+#pragma endregion
