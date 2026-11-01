@@ -14,10 +14,11 @@ end
 
     add_files("**.cpp")
 
-    add_includedirs("./", {public=true})
+    add_includedirs(".", {public=true})
     add_includedirs("Asset", {public=true})
     add_includedirs("Core", {public=true})
-    add_includedirs("Graphics", {public=true})
+    add_includedirs("Render", {public=true})
+    add_includedirs("Render/Backend/D3D12", {public=true})
     add_includedirs("Platform/Input", {public=true})
     add_includedirs("Platform/Timer", {public=true})
     add_includedirs("Platform/Window", {public=true})

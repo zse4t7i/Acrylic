@@ -1,7 +1,7 @@
 set_project("Acrylic")
 set_version("0.0.1", {build = "%Y%m%d%H%M"})
 set_xmakever("3.1.2")
-set_languages("c++23")
+set_languages("c++20")
 set_toolchains("msvc")
 set_encodings("utf-8")
 set_fpmodels("fast")

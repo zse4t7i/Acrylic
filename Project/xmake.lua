@@ -62,15 +62,16 @@ rule("CompileShader")
     end)
 
 target("Project", function ()
-    set_kind("shared")
+    -- set_kind("shared")
+    set_kind("phony")
     set_default(false)
 
     add_rules("CopyProjectAsset")
     add_rules("CompileShader")
-    add_rules("utils.symbols.export_all", {export_classes = true})
+    --add_rules("utils.symbols.export_all", {export_classes = true})
 
-    add_files("Source/**.cpp")
+    -- add_files("Source/**.cpp")
     add_files("Shader/**.hlsl")
 
-    add_includedirs("Source", {public=true})
+    -- add_includedirs("Source", {public=true})
 end)

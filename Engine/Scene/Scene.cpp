@@ -7,6 +7,7 @@
 #include "Input.hpp"
 #include "Log.hpp"
 #include "Resource.hpp"
+#include "State.hpp"
 #include "Util.hpp"
 #include "Window.hpp"
 
@@ -258,7 +259,7 @@ void Update()
     XMMATRIX projection{};
     XMMATRIX viewProjection{};
 
-    auto& inputState = Acrylic::Input::GetState();
+    auto& inputState = Acrylic::State::GetRefInput();
     auto& registry   = Acrylic::ECS::GetRefRegistry();
 
     auto viewLight = registry.view<ComLight>();
@@ -289,27 +290,23 @@ void Update()
 
         // Check if LSHIFT is held (index 8)
         const bool isShiftHeld =
-            inputState.KeyboardKeys[8] == Acrylic::Input::ButtonState::Held;
+            inputState.KeyboardKeys[8] == Acrylic::State::Button::Held;
         F32 currentSpeed = isShiftHeld ? moveSpeed * acceleration : moveSpeed;
 
         // Handle forward/backward movement (W/S or UP/DOWN)
-        if (inputState.KeyboardKeys[0] == Acrylic::Input::ButtonState::Held ||
-            inputState.KeyboardKeys[4] ==
-                Acrylic::Input::ButtonState::Held) // W
+        if (inputState.KeyboardKeys[0] == Acrylic::State::Button::Held ||
+            inputState.KeyboardKeys[4] == Acrylic::State::Button::Held) // W
             eye = XMVectorAdd(eye, XMVectorScale(forward, currentSpeed));
-        if (inputState.KeyboardKeys[1] == Acrylic::Input::ButtonState::Held ||
-            inputState.KeyboardKeys[5] ==
-                Acrylic::Input::ButtonState::Held) // S
+        if (inputState.KeyboardKeys[1] == Acrylic::State::Button::Held ||
+            inputState.KeyboardKeys[5] == Acrylic::State::Button::Held) // S
             eye = XMVectorSubtract(eye, XMVectorScale(forward, currentSpeed));
 
         // Handle left/right movement (A/D or LEFT/RIGHT)
-        if (inputState.KeyboardKeys[2] == Acrylic::Input::ButtonState::Held ||
-            inputState.KeyboardKeys[6] ==
-                Acrylic::Input::ButtonState::Held) // A
+        if (inputState.KeyboardKeys[2] == Acrylic::State::Button::Held ||
+            inputState.KeyboardKeys[6] == Acrylic::State::Button::Held) // A
             eye = XMVectorAdd(eye, XMVectorScale(right, currentSpeed));
-        if (inputState.KeyboardKeys[3] == Acrylic::Input::ButtonState::Held ||
-            inputState.KeyboardKeys[7] ==
-                Acrylic::Input::ButtonState::Held) // D
+        if (inputState.KeyboardKeys[3] == Acrylic::State::Button::Held ||
+            inputState.KeyboardKeys[7] == Acrylic::State::Button::Held) // D
             eye = XMVectorSubtract(eye, XMVectorScale(right, currentSpeed));
 
         // Update camera position
