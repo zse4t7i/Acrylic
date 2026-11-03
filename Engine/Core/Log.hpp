@@ -9,7 +9,7 @@
 #define LOG_DEBUG(fmt, ...)                                                    \
     QUILL_LOG_DEBUG(Acrylic::Log::AcrylicLogger, fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...)                                                     \
-    //QUILL_LOG_INFO(Acrylic::Log::AcrylicLogger, fmt, ##__VA_ARGS__)
+    QUILL_LOG_INFO(Acrylic::Log::AcrylicLogger, fmt, ##__VA_ARGS__)
 #define LOG_WARNING(fmt, ...)                                                  \
     QUILL_LOG_WARNING(Acrylic::Log::AcrylicLogger, fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...)                                                    \

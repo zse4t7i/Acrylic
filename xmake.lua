@@ -4,11 +4,9 @@ set_xmakever("3.1.2")
 set_languages("c++20")
 set_toolchains("msvc")
 set_encodings("utf-8")
-set_fpmodels("fast")
 set_config("builddir", ".build")
 set_policy("build.progress_style", "multirow")
 
-add_vectorexts("all")
 add_rules("mode.debug", "mode.release")
 add_rules("plugin.compile_commands.autoupdate", {outputdir = ".build"})
 

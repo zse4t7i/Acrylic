@@ -63,8 +63,7 @@ rule("CompileShader")
 
 target("Project", function ()
     -- set_kind("shared")
-    set_kind("phony")
-    set_default(false)
+    set_kind("object")
 
     add_rules("CopyProjectAsset")
     add_rules("CompileShader")
