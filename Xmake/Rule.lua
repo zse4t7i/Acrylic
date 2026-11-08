@@ -1,13 +1,13 @@
 rule("CopyAcrylicAsset")
-    before_build(function (target)
-        os.cp("$(projectdir)/Asset/Font/", target:targetdir(), {copy_if_different = true})
+    before_config(function (target)
+        os.cp("$(projectdir)/Asset/Font", target:targetdir(), {copy_if_different = true})
 
         cprint("${bright green}Acrylic's assets copied!")
     end)
 
 
 rule("CopyD3D12AgilitySDK")
-    before_build(function (target)
+    before_config(function (target)
         -- print(string.format([[srcDir is %s]], target:pkg("directx12-agility"):installdir()))
         local srcDir = target:pkg("directx12-agility"):installdir()
         local dstDir = path.join(target:targetdir(), "D3D12")
@@ -22,5 +22,5 @@ rule("CopyD3D12AgilitySDK")
 
         -- Parse the minor version number and define D3D12_AGILITY_SDK_VERSION.
         local version = target:pkg("directx12-agility"):version():minor()
-        target:add("defines", "D3D12_AGILITY_SDK_VERSION=" .. version)
+        target:add("defines", "D3D12_AGILITY_SDK_VERSION=" .. version, {public = true})
     end)

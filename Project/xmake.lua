@@ -1,7 +1,7 @@
 rule("CopyProjectAsset")
-    before_build(function (target)
-        os.cp("$(scriptdir)/Mesh/", target:targetdir(), {copy_if_different = true})
-        os.cp("$(scriptdir)/Texture/", target:targetdir(), {copy_if_different = true})
+    before_config(function (target)
+        os.cp("$(scriptdir)/Mesh", target:targetdir(), {copy_if_different = true})
+        os.cp("$(scriptdir)/Texture", target:targetdir(), {copy_if_different = true})
 
         cprint("${bright green}Project's resources copied!")
     end)

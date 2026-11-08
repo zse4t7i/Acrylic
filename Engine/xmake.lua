@@ -3,6 +3,7 @@ target("AcrylicEngine", function ()
     set_pcxxheader("PCH.hpp")
 
     add_rules("CopyAcrylicAsset")
+    add_rules("CopyD3D12AgilitySDK")
     
     add_syslinks("user32", "d3d12", "dxgi")
 
@@ -37,6 +38,7 @@ end
         -- "directxmesh",
         "directxmath",
         "directx-headers",
+        "directx12-agility",
         "GameInput",
         "PIXEventRuntime")
 end)
